@@ -3,9 +3,9 @@
 	import { Button } from 'carbon-components-svelte';
 	import { ChevronLeftGlyph, ChevronRightGlyph } from 'carbon-icons-svelte';
 	import { onMount } from 'svelte';
-	import CalendarReservation from './CalendarReservation.svelte';
-	import DeleteReservation from './DeleteReservation.svelte';
-	import NewReservation from './NewReservation.svelte';
+	import CalendarReservation from '$lib/ui/calendar/CalendarReservation.svelte';
+	import DeleteReservation from '$lib/ui/calendar/DeleteReservation.svelte';
+	import NewReservation from '$lib/ui/calendar/NewReservation.svelte';
 
 	let dayReservations = [
 		{ spot: 1, start: 9, duration: 8 },
