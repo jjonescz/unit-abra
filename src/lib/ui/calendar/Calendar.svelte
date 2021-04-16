@@ -28,7 +28,8 @@
 			target: document.querySelector(`[data-id="${r.slot}-${getHours(r.start)}"`),
 			hydrate: true,
 			props: { r }
-		}).$on('clicked', function () {
+		}).$on('clicked', function (e) {
+			delR = e.detail.r;
 			newOpen = false; // Close if opened.
 			delOpen = true;
 			toDelete = this;
@@ -55,6 +56,7 @@
 
 	// Delete existing reservations.
 	let delOpen = false;
+	let delR = {};
 	let toDelete = {};
 	function deleteReservation(e) {
 		if (e.detail.delete) {
@@ -98,7 +100,7 @@
 	slot={newslot}
 	startInput={setMinutes(setHours(date, newStart), 0)}
 />
-<DeleteReservation bind:open={delOpen} on:deleteReservation={deleteReservation} />
+<DeleteReservation bind:r={delR} bind:open={delOpen} on:deleteReservation={deleteReservation} />
 
 <style lang="scss">
 	table {

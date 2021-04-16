@@ -15,19 +15,21 @@ export async function getReservations(authorization, date) {
     }
 }
 
-export async function deleteReservation(authorization, date) {
+export async function deleteReservation(authorization, id) {
+    // Delete reservation on server.
     const query = new URLSearchParams({
-        date: date.toISOString()
+        id: id,
     });
-    console.log(`${endpoint}${query}`);
     const response = await fetch(`${endpoint}${query}`, {
+        method: 'DELETE',
         headers: {
             authorization: authorization
         }
     });
     if (response.ok) {
-        return await response.json();
+        return true;
     }
+    else { return false; }
 }
 
 export async function createReservation(authorization, date, duration, slot) {
@@ -40,7 +42,7 @@ export async function createReservation(authorization, date, duration, slot) {
         duration: duration,
         slot: slot
     };
-    const response = await fetch(`/receptionist/reservations.json?${query}`, {
+    const response = await fetch(`${endpoint}${query}`, {
         method: 'PUT',
         headers: {
             authorization: authorization
