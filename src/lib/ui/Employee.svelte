@@ -10,7 +10,7 @@
 		TimePicker
 	} from 'carbon-components-svelte';
 	import { TrashCan16, WatsonHealthRotate_36016 } from 'carbon-icons-svelte';
-	import { differenceInMinutes, format, parse, startOfDay } from 'date-fns';
+	import { differenceInMinutes, format, isBefore, parse, startOfDay } from 'date-fns';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
@@ -76,10 +76,19 @@
 		if (response.ok) {
 			const data = await response.json();
 			reservations.update((r) => {
-				r.unshift({
+				const item = {
 					...reservation,
 					...data
-				});
+				};
+
+				// Find place to insert.
+				for (let i = 0; i < r.length; i++) {
+					if (isBefore(new Date(item.start), new Date(r[i].start))) {
+						r.splice(i, 0, item);
+						return r;
+					}
+				}
+				r.push(item);
 				return r;
 			});
 		}
@@ -143,7 +152,7 @@
 	on:click={() => loadReservations()}
 />
 
-{#each $reservations as r}
+{#each $reservations as r (r.id)}
 	<Tile>
 		<div>
 			{r.slot}: {format(new Date(r.start), 'yyyy-MM-dd HH:mm')} for {r.duration} minutes
