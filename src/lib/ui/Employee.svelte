@@ -1,12 +1,43 @@
 <script>
 	import { reservations } from '$lib/server/employee';
-	import { Button, ButtonSet, Tile, Grid, Row, Column } from 'carbon-components-svelte';
+	import { browser } from '$app/env';
+	import {
+		Button,
+		DatePicker,
+		DatePickerInput,
+		Form,
+		FluidForm,
+		Tile,
+		TimePicker
+	} from 'carbon-components-svelte';
 	import { TrashCan16 } from 'carbon-icons-svelte';
 
-	function removeReservation(reservations, index) {
-		reservations;
-	}
+	let now = new Date();
+	let date = now.toISOString();
+	let time = `${now.getHours()}:${now.getMinutes()}`;
+	let duration = '1:00';
 </script>
+
+<h2>New reservation</h2>
+
+<Form>
+	{#if browser}
+		<DatePicker datePickerType="single" dateFormat="Y-m-d" minDate={now} bind:value={date}>
+			<DatePickerInput labelText="Date" placeholder="yyyy-mm-dd" pattern=".*" />
+		</DatePicker>
+	{/if}
+	<TimePicker labelText="Time" bind:value={time} />
+	<TimePicker labelText="Duration" bind:value={duration} />
+	<Button
+		type="submit"
+		on:click={() =>
+			reservations.update((r) => {
+				const d = new Date(`${date} ${time}`);
+				r.unshift({ start: d, duration: 60, slot: 100 + Math.random() * 20 });
+				return r;
+			})}>Reserve</Button
+	>
+</Form>
 
 <h2>Your reservations</h2>
 
