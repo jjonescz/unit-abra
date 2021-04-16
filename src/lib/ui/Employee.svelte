@@ -4,13 +4,13 @@
 		Button,
 		DatePicker,
 		DatePickerInput,
+		DatePickerSkeleton,
 		Form,
 		Tile,
-		TimePicker,
-		DatePickerSkeleton
+		TimePicker
 	} from 'carbon-components-svelte';
 	import { TrashCan16 } from 'carbon-icons-svelte';
-	import { format, getHours, getMinutes, parse } from 'date-fns';
+	import { differenceInMinutes, format, parse, startOfDay } from 'date-fns';
 	import { writable } from 'svelte/store';
 
 	const reservations = writable([]);
@@ -32,7 +32,7 @@
 	$: durationTooLong = minutes > 8 * 60;
 
 	function totalMinutes(date) {
-		return getHours(date) * 60 + getMinutes(date);
+		return differenceInMinutes(date, startOfDay(date));
 	}
 </script>
 
