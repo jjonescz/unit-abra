@@ -1,14 +1,10 @@
 <script>
 	import { browser } from '$app/env';
 	import {
-		Grid,
-		Column,
-		Row,
 		Button,
 		DatePicker,
 		DatePickerInput,
 		DatePickerSkeleton,
-		FormGroup,
 		SkeletonPlaceholder,
 		Tile,
 		TimePicker
@@ -127,42 +123,24 @@
 	{#if browser}
 		<DatePicker datePickerType="single" dateFormat="Y-m-d" {minDate} bind:value={dateInput}>
 			<DatePickerInput labelText="Date" placeholder="yyyy-mm-dd" pattern=".*" />
+			<TimePicker
+				labelText="Time"
+				bind:value={timeInput}
+				pattern=".*"
+				invalid={!isValid(dateTime)}
+				invalidText="Invalid time."
+			/>
+			<TimePicker
+				labelText="Duration"
+				bind:value={durationInput}
+				pattern=".*"
+				invalid={durationTooLong || isNaN(minutes)}
+				invalidText={durationTooLong ? 'You can reserve at most 8 hours.' : 'Invalid duration.'}
+			/>
 		</DatePicker>
 	{:else}
 		<DatePickerSkeleton />
 	{/if}
-</div>
-<div class="group">
-	<Grid noGutter>
-		<Row>
-			<Column sm={1} md={2} lg={2}>
-				{#if browser}
-					<TimePicker
-						labelText="Time"
-						bind:value={timeInput}
-						pattern=".*"
-						invalid={!isValid(dateTime)}
-						invalidText="Invalid time."
-					/>
-				{:else}
-					<DatePickerSkeleton />
-				{/if}
-			</Column>
-			<Column sm={1} md={2} lg={2}>
-				{#if browser}
-					<TimePicker
-						labelText="Duration"
-						bind:value={durationInput}
-						pattern=".*"
-						invalid={durationTooLong || isNaN(minutes)}
-						invalidText={durationTooLong ? 'You can reserve at most 8 hours.' : 'Invalid duration.'}
-					/>
-				{:else}
-					<DatePickerSkeleton />
-				{/if}
-			</Column>
-		</Row>
-	</Grid>
 </div>
 <div class="group">
 	<Button type="submit" on:click={createReservation}>Reserve</Button>
@@ -200,6 +178,15 @@
 
 <style lang="scss">
 	.group {
-		margin-top: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	:global(.bx--date-picker) {
+		flex-wrap: wrap;
+	}
+
+	:global(.bx--date-picker > div) {
+		margin-top: 0.5rem;
+		margin-right: 0.125rem;
 	}
 </style>
