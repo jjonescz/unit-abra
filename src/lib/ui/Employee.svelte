@@ -40,7 +40,7 @@
 		const query = new URLSearchParams({
 			user: 'team8.uzivatel1'
 		});
-		const response = await fetch(`/employee.json?${query}`, {
+		const response = await fetch(`/employee/reservations.json?${query}`, {
 			headers: {
 				authorization: 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr'
 			}
