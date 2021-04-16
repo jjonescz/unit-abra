@@ -6,7 +6,7 @@
 	import NewReservation from '$lib/ui/calendar/NewReservation.svelte';
 	import { Button } from 'carbon-components-svelte';
 	import { ChevronLeftGlyph, ChevronRightGlyph } from 'carbon-icons-svelte';
-	import { getHours, parseISO, setHours } from 'date-fns';
+	import { getHours, parseISO, setHours, setMinutes } from 'date-fns';
 	import { onMount } from 'svelte';
 
 	let date = new Date();
@@ -17,13 +17,15 @@
 		const data = await getReservations(authorization, date);
 		console.log(data);
 		data.forEach((r) => {
+			r.start = parseISO(r.start);
 			displayReservation(r);
 		});
 	});
 
 	function displayReservation(r) {
+		console.log(r);
 		new CalendarReservation({
-			target: document.querySelector(`[data-id="${r.slot}-${getHours(parseISO(r.start))}"`),
+			target: document.querySelector(`[data-id="${r.slot}-${getHours(r.start)}"`),
 			hydrate: true,
 			props: { r }
 		}).$on('clicked', function () {
@@ -35,18 +37,19 @@
 
 	// Create new reservations.
 	let newOpen = false;
-	let newslot = false;
-	let newStart = false;
+	let newslot;
+	let newStart = 0;
 
 	function createReservation(slot, start) {
-		newOpen = true && !delOpen; // We don't want to open both modals.
 		newslot = slot;
 		newStart = start;
+		newOpen = true && !delOpen; // We don't want to open both modals.
 	}
 
 	// Add new reservation.
 	function addReservation(e) {
 		const r = e.detail.r;
+		console.log(r);
 		displayReservation(r);
 	}
 
@@ -73,7 +76,7 @@
 	<tr>
 		<td />
 		{#each [...Array(24)] as _, hour}
-			<th scope="col">{hour + 1}</th>
+			<th scope="col">{hour}</th>
 		{/each}
 	</tr>
 	{#each [...Array(parkingsTotal)] as _, slot}
@@ -82,8 +85,8 @@
 			{#each [...Array(24)] as _, hour}
 				<!-- Mark table cells for positioning of reservations. -->
 				<td
-					data-id="{parkingsMin + slot}-{hour + 1}"
-					on:click={() => createReservation(parkingsMin + slot, hour + 1)}
+					data-id="{parkingsMin + slot}-{hour}"
+					on:click={() => createReservation(parkingsMin + slot, hour)}
 				/>
 			{/each}
 		</tr>
@@ -93,7 +96,7 @@
 	on:addReservation={addReservation}
 	bind:open={newOpen}
 	slot={newslot}
-	start={setHours(date, newStart)}
+	startInput={setMinutes(setHours(date, newStart), 0)}
 />
 <DeleteReservation bind:open={delOpen} on:deleteReservation={deleteReservation} />
 

@@ -1,26 +1,33 @@
 <script>
-	import { parkingsTotal, parkingsMin } from '$lib/db.js';
-	import { Modal, NumberInput, TimePicker, Form } from 'carbon-components-svelte';
-	import { createEventDispatcher } from 'svelte';
+	import { browser } from '$app/env';
 	import { createReservation } from '$lib/calendar';
-	import { toDate, differenceInMinutes, getHours } from 'date-fns';
+	import { parkingsMin, parkingsTotal } from '$lib/db.js';
+	import {
+		DatePicker,
+		DatePickerInput,
+		DatePickerSkeleton,
+		Form,
+		Modal,
+		NumberInput,
+		TimePicker
+	} from 'carbon-components-svelte';
+	import { differenceInMinutes, format, parse, startOfDay, toDate } from 'date-fns';
+	import { createEventDispatcher } from 'svelte';
 
 	export let open; // Toggles modal visibility.
 	export let slot; // Selected parking slot.
-	export let start;
-	$: end = Math.min(start + 1, 24);
+	export let startInput;
 
 	let authorization = 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr';
 
 	const dispatchReservation = createEventDispatcher();
 	function addReservation() {
-		console.log(toDate(start));
-		console.log(differenceInMinutes(start, end));
+		if (createReservation(authorization, start, minutes, slot)) {
+			console.log(start);
 
-		if (createReservation(authorization, toDate(start), differenceInMinutes(start, end), slot)) {
 			dispatchReservation('addReservation', {
-				r: { slot: slot, start: start, duration: end - start }
-				//r: { slot: slot, start: start, duration: end - start }
+				// TODO: Return ID!
+				r: { slot: slot, start: start, duration: minutes }
 			});
 			alert(`Reservation for........`);
 			open = false;
@@ -28,38 +35,63 @@
 			alert('Your reservation could not be created, please try again.');
 		}
 	}
+
+	const now = new Date();
+	const minDate = format(now, 'yyyy-MM-dd');
+
+	// User inputs
+	let dateInput;
+	let timeInput;
+	let durationInput = '1:00';
+
+	// Parsing
+	$: date = parse(dateInput, 'yyyy-MM-dd', now);
+	$: start = parse(timeInput, 'H:mm', date);
+	$: minutes = totalMinutes(parse(durationInput, 'H:mm', now));
+
+	// Validation.
+	$: durationTooLong = minutes > 8 * 60;
+
+	function totalMinutes(date) {
+		return differenceInMinutes(date, startOfDay(date));
+	}
 </script>
 
 <Modal
 	bind:open
-	modalHeading="New reservation {getHours(start)} - {end}"
+	modalHeading="New reservation"
 	primaryButtonText="Confirm"
 	secondaryButtonText="Cancel"
 	on:click:button--secondary={() => (open = false)}
-	on:open
+	on:open={() => {
+		dateInput = format(startInput, 'yyyy-MM-dd');
+		timeInput = format(startInput, 'H:mm');
+	}}
 	on:close
 	on:submit={addReservation}
 >
 	<Form on:submit={addReservation}>
+		{#if browser}
+			<DatePicker datePickerType="single" dateFormat="Y-m-d" {minDate} bind:value={dateInput}>
+				<DatePickerInput labelText="Date" placeholder="yyyy-mm-dd" pattern=".*" />
+			</DatePicker>
+		{:else}
+			<DatePickerSkeleton />
+		{/if}
+		<TimePicker labelText="Time" bind:value={timeInput} pattern=".*" />
+		<TimePicker
+			labelText="Duration"
+			bind:value={durationInput}
+			pattern=".*"
+			invalid={durationTooLong}
+			invalidText={durationTooLong ? 'You can reserve at most 8 hours.' : null}
+		/>
 		<NumberInput
 			bind:value={slot}
-			mobile
 			min={parkingsMin}
 			max={parkingsMin + parkingsTotal}
 			label="Parking slot"
+			invalidText={`Only ${parkingsMin} to ${parkingsMin + parkingsTotal}.`}
 		/>
-		<TimePicker bind:value={start} labelText="Start" placeholder="hh:mm" />
-		<TimePicker bind:value={end} labelText="End" placeholder="hh:mm" />
 	</Form>
 </Modal>
-
-<style lang="scss">
-	button {
-		height: 100%;
-		width: 100%;
-		background-color: transparent;
-		border: 0;
-		display: inline-block;
-		text-decoration: none;
-	}
-</style>
