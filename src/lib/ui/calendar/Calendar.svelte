@@ -1,5 +1,5 @@
 <script>
-	import { parkingslots } from '$lib/db.js';
+	import { parkingsTotal, parkingsMin } from '$lib/db.js';
 	import { Button } from 'carbon-components-svelte';
 	import { ChevronLeftGlyph, ChevronRightGlyph } from 'carbon-icons-svelte';
 	import { onMount } from 'svelte';
@@ -7,6 +7,7 @@
 	import DeleteReservation from '$lib/ui/calendar/DeleteReservation.svelte';
 	import NewReservation from '$lib/ui/calendar/NewReservation.svelte';
 	import { getReservations } from '$lib/calendar';
+	import { getHours, getMinutes, parseISO } from 'date-fns';
 
 	let date = new Date().toISOString();
 	let authorization = 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr';
@@ -22,7 +23,7 @@
 
 	function displayReservation(r) {
 		new CalendarReservation({
-			target: document.querySelector(`[data-id="${r.slot}-${r.start}"`),
+			target: document.querySelector(`[data-id="${r.slot}-${getHours(parseISO(r.start))}"`),
 			hydrate: true,
 			props: { r }
 		}).$on('clicked', function () {
@@ -75,14 +76,14 @@
 			<th scope="col">{hour + 1}</th>
 		{/each}
 	</tr>
-	{#each [...Array(parkingslots)] as _, slot}
+	{#each [...Array(parkingsTotal)] as _, slot}
 		<tr>
-			<th scope="row">{slot + 1}</th>
+			<th scope="row">{parkingsMin + slot}</th>
 			{#each [...Array(24)] as _, hour}
 				<!-- Mark table cells for positioning of reservations. -->
 				<td
-					data-id="{slot + 1}-{hour + 1}"
-					on:click={() => createReservation(slot + 1, hour + 1)}
+					data-id="{parkingsMin + slot}-{hour + 1}"
+					on:click={() => createReservation(parkingsMin + slot, hour + 1)}
 				/>
 			{/each}
 		</tr>

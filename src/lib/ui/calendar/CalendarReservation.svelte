@@ -1,7 +1,10 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
+	import { parkingsMin } from '$lib/db.js';
+	import { getHours, addMinutes, getMinutes, parseISO } from 'date-fns';
 
 	export let r = {};
+	$: start = parseISO(r.start);
 
 	const dispatchReservation = createEventDispatcher();
 	function clickReservation() {
@@ -21,9 +24,10 @@
 </script>
 
 <button
-	style="width: calc({r.duration * 100}% + {r.duration - 1}px); background-color: {slotColors[
-		r.slot % slotColors.length
-	]};"
+	style="width: calc({(r.duration * 100) / 60}% + {getHours(addMinutes(start, r.duration)) -
+		getHours(start)}px); background-color: {slotColors[
+		(r.slot - parkingsMin) % slotColors.length
+	]}; left: {(getMinutes(start) * 100) / 60}%"
 	on:click={clickReservation}
 />
 
@@ -32,7 +36,6 @@
 		height: calc(100% + 1px);
 		opacity: 50%;
 		position: absolute;
-		left: 0;
 		top: 0;
 		display: inline-block;
 		text-decoration: none;

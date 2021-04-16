@@ -1,5 +1,5 @@
 <script>
-	import { parkingslots } from '$lib/db.js';
+	import { parkingsTotal, parkingsMin } from '$lib/db.js';
 	import { Modal, NumberInput, TimePicker, Form } from 'carbon-components-svelte';
 	import { createEventDispatcher } from 'svelte';
 
@@ -29,7 +29,13 @@
 	on:submit={createReservation}
 >
 	<Form on:submit={createReservation}>
-		<NumberInput bind:value={slot} mobile min={1} max={parkingslots} label="Parking slot" />
+		<NumberInput
+			bind:value={slot}
+			mobile
+			min={parkingsMin}
+			max={parkingsMin + parkingsTotal}
+			label="Parking slot"
+		/>
 		<TimePicker bind:value={start} labelText="Start" placeholder="hh:mm" />
 		<TimePicker bind:value={end} labelText="End" placeholder="hh:mm" />
 	</Form>
