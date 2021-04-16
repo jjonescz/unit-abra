@@ -11,7 +11,7 @@
 		TimePicker
 	} from 'carbon-components-svelte';
 	import { TrashCan16, WatsonHealthRotate_36016 } from 'carbon-icons-svelte';
-	import { differenceInMinutes, format, parse, startOfDay } from 'date-fns';
+	import { differenceInMinutes, format, isValid, parse, startOfDay } from 'date-fns';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
@@ -128,13 +128,19 @@
 	{:else}
 		<DatePickerSkeleton />
 	{/if}
-	<TimePicker labelText="Time" bind:value={timeInput} pattern=".*" />
+	<TimePicker
+		labelText="Time"
+		bind:value={timeInput}
+		pattern=".*"
+		invalid={!isValid(dateTime)}
+		invalidText="Invalid time."
+	/>
 	<TimePicker
 		labelText="Duration"
 		bind:value={durationInput}
 		pattern=".*"
-		invalid={durationTooLong}
-		invalidText={durationTooLong ? 'You can reserve at most 8 hours.' : null}
+		invalid={durationTooLong || isNaN(minutes)}
+		invalidText={durationTooLong ? 'You can reserve at most 8 hours.' : 'Invalid duration.'}
 	/>
 	<p>
 		Selected time {dateInput} => {dateTime} for {minutes} minutes.
