@@ -146,16 +146,18 @@
 	<Button type="submit" on:click={createReservation}>Reserve</Button>
 </div>
 
-<h2>Your reservations</h2>
-<Button
-	kind="tertiary"
-	iconDescription="Refresh"
-	icon={WatsonHealthRotate_36016}
-	on:click={() => {
-		reservations.set(null);
-		loadReservations();
-	}}
-/>
+<h2 style="margin-top: 2rem; margin-bottom: 1rem;">
+	<span style="margin-right: 0.5rem;">Your reservations</span>
+	<Button
+		kind="tertiary"
+		iconDescription="Refresh"
+		icon={WatsonHealthRotate_36016}
+		on:click={() => {
+			reservations.set(null);
+			loadReservations();
+		}}
+	/>
+</h2>
 
 {#if $reservations == null}
 	<SkeletonPlaceholder style="width: 100%; height: 5rem;" />
