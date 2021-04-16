@@ -6,4 +6,4 @@
 	<title />
 </svelte:head>
 
-<LoginScreen/>
+<LoginScreen />
