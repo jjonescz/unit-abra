@@ -38,8 +38,8 @@
 		return differenceInMinutes(date, startOfDay(date));
 	}
 
-	// Load reservations from server.
 	async function loadReservations() {
+		// Load reservations from server.
 		const query = new URLSearchParams({
 			user: user.username
 		});
@@ -48,6 +48,8 @@
 				authorization: user.authorization
 			}
 		});
+
+		// Update UI.
 		if (response.ok) {
 			const data = await response.json();
 			reservations.set(data);
