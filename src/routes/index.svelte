@@ -1,6 +1,7 @@
 <script>
 	import { session } from '$app/stores';
 	import Employee from '$lib/ui/Employee.svelte';
+	import Calendar from '$lib/ui/calendar/Calendar.svelte';
 	import {
 		Header,
 		HeaderAction,
@@ -40,6 +41,10 @@
 	</Header>
 
 	<Content>
-		<Employee bind:user />
+		{#if user.role === 'RECEPCNI'}
+			<Calendar {user} />
+		{:else}
+			<Employee {user} />
+		{/if}
 	</Content>
 {/if}

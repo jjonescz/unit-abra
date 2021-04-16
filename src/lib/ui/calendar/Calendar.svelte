@@ -19,7 +19,7 @@
 	import { browser } from '$app/env';
 
 	let date = new Date();
-	let authorization = 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr';
+	export let user = {};
 
 	let reservations = {};
 
@@ -29,7 +29,7 @@
 		for (const [_, r] of Object.entries(reservations)) {
 			r.$destroy();
 		}
-		const data = await getReservations(authorization, date);
+		const data = await getReservations(user.authorization, date);
 		console.log(data);
 		data.forEach((r) => {
 			r.start = parseISO(r.start);
