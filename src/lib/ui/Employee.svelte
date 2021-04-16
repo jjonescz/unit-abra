@@ -12,10 +12,13 @@
 		DatePickerSkeleton
 	} from 'carbon-components-svelte';
 	import { TrashCan16 } from 'carbon-icons-svelte';
+	import dayjs from 'dayjs';
 
-	let now = new Date();
-	let date = now.toISOString();
-	let time = `${now.getHours()}:${now.getMinutes()}`;
+	let now = dayjs(new Date());
+
+	// User inputs
+	let date = now.format('YYYY-MM-DD');
+	let time = now.format('hh:mm');
 	let duration = '1:00';
 </script>
 
@@ -29,8 +32,8 @@
 	{:else}
 		<DatePickerSkeleton />
 	{/if}
-	<TimePicker labelText="Time" bind:value={time} />
-	<TimePicker labelText="Duration" bind:value={duration} />
+	<TimePicker labelText="Time" bind:value={time} pattern=".*" />
+	<TimePicker labelText="Duration" bind:value={duration} pattern=".*" />
 	<Button
 		type="submit"
 		on:click={() =>
