@@ -1,11 +1,14 @@
 <script>
 	import { browser } from '$app/env';
 	import {
+		Grid,
+		Column,
+		Row,
 		Button,
 		DatePicker,
 		DatePickerInput,
 		DatePickerSkeleton,
-		Form,
+		FormGroup,
 		SkeletonPlaceholder,
 		Tile,
 		TimePicker
@@ -120,32 +123,50 @@
 
 <h2>New reservation</h2>
 
-<Form>
+<div class="group">
 	{#if browser}
 		<DatePicker datePickerType="single" dateFormat="Y-m-d" {minDate} bind:value={dateInput}>
 			<DatePickerInput labelText="Date" placeholder="yyyy-mm-dd" pattern=".*" />
 		</DatePicker>
-		<TimePicker
-			labelText="Time"
-			bind:value={timeInput}
-			pattern=".*"
-			invalid={!isValid(dateTime)}
-			invalidText="Invalid time."
-		/>
-		<TimePicker
-			labelText="Duration"
-			bind:value={durationInput}
-			pattern=".*"
-			invalid={durationTooLong || isNaN(minutes)}
-			invalidText={durationTooLong ? 'You can reserve at most 8 hours.' : 'Invalid duration.'}
-		/>
 	{:else}
 		<DatePickerSkeleton />
-		<DatePickerSkeleton />
-		<DatePickerSkeleton />
 	{/if}
+</div>
+<div class="group">
+	<Grid noGutter>
+		<Row>
+			<Column sm={1} md={2} lg={2}>
+				{#if browser}
+					<TimePicker
+						labelText="Time"
+						bind:value={timeInput}
+						pattern=".*"
+						invalid={!isValid(dateTime)}
+						invalidText="Invalid time."
+					/>
+				{:else}
+					<DatePickerSkeleton />
+				{/if}
+			</Column>
+			<Column sm={1} md={2} lg={2}>
+				{#if browser}
+					<TimePicker
+						labelText="Duration"
+						bind:value={durationInput}
+						pattern=".*"
+						invalid={durationTooLong || isNaN(minutes)}
+						invalidText={durationTooLong ? 'You can reserve at most 8 hours.' : 'Invalid duration.'}
+					/>
+				{:else}
+					<DatePickerSkeleton />
+				{/if}
+			</Column>
+		</Row>
+	</Grid>
+</div>
+<div class="group">
 	<Button type="submit" on:click={createReservation}>Reserve</Button>
-</Form>
+</div>
 
 <h2>Your reservations</h2>
 <Button
@@ -176,3 +197,9 @@
 		<em>No reservations yet.</em>
 	{/each}
 {/if}
+
+<style lang="scss">
+	.group {
+		margin-top: 1rem;
+	}
+</style>
