@@ -11,6 +11,7 @@
 	} from 'carbon-components-svelte';
 	import { TrashCan16 } from 'carbon-icons-svelte';
 	import { differenceInMinutes, format, parse, startOfDay } from 'date-fns';
+	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
 	const reservations = writable([]);
@@ -34,6 +35,21 @@
 	function totalMinutes(date) {
 		return differenceInMinutes(date, startOfDay(date));
 	}
+
+	onMount(async () => {
+		const query = new URLSearchParams({
+			user: 'team8.uzivatel1'
+		});
+		const response = await fetch(`/employee.json?${query}`, {
+			headers: {
+				authorization: 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr'
+			}
+		});
+		if (response.ok) {
+			const data = await response.json();
+			reservations.set(data);
+		}
+	});
 </script>
 
 <h2>New reservation</h2>
@@ -78,7 +94,7 @@
 {#each $reservations as r, i}
 	<Tile>
 		<div>
-			{r.slot}: {format(r.start, 'yyyy-MM-dd HH:mm')} for {r.duration} minutes
+			{r.slot}: {format(new Date(r.start), 'yyyy-MM-dd HH:mm')} for {r.duration} minutes
 		</div>
 		<div>
 			<Button
