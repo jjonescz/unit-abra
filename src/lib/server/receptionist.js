@@ -1,14 +1,15 @@
-import { add, differenceInMinutes, formatISO } from 'date-fns';
+import { add, differenceInMinutes, endOfDay, formatISO, startOfDay } from 'date-fns';
 import fetch from 'node-fetch';
 
 const endpoint = 'https://rezervace.flexibee.eu/v2/c/rezervace8';
 
-export async function getReservations(userName, authorization) {
-    const userEncoded = encodeURIComponent(userName);
+export async function getReservations(authorization, date) {
     const query = new URLSearchParams({
         detail: 'custom:zahajeni,dokonceni,zakazka'
     });
-    const response = await fetch(`${endpoint}/udalost/(zodpPrac = "code:${userEncoded}").json?${query}`, {
+    const start = encodeURIComponent(formatISO(startOfDay(date)));
+    const end = encodeURIComponent(formatISO(endOfDay(date)));
+    const response = await fetch(`${endpoint}/udalost/(dokonceni >= "${start}" and zahajeni <= "${end}").json?${query}`, {
         headers: {
             'Authorization': authorization
         }
@@ -27,7 +28,7 @@ export async function getReservations(userName, authorization) {
     });
 }
 
-export async function createReservation(userName, authorization, start, duration) {
+export async function createReservation(userName, authorization, start, duration, slot) {
     const response = await fetch(`${endpoint}/udalost.json`, {
         method: 'PUT',
         headers: {
@@ -41,7 +42,7 @@ export async function createReservation(userName, authorization, start, duration
                     zodpPrac: `code:${userName}`,
                     zahajeni: formatISO(start),
                     dokonceni: formatISO(add(start, { minutes: duration })),
-                    zakazka: 'code:101', // TODO: Select parking slot.
+                    zakazka: `code:${slot}`,
                     volno: false
                 }
             }
@@ -50,8 +51,7 @@ export async function createReservation(userName, authorization, start, duration
     const data = await response.json();
     if (data.winstrom.success) {
         return {
-            id: data.winstrom.results[0].id,
-            slot: 101 // TODO: Update when changing dynamically.
+            id: data.winstrom.results[0].id
         };
     }
     return null;
