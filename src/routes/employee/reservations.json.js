@@ -1,6 +1,6 @@
 import { createReservation, deleteReservation, getReservations } from '$lib/server/employee';
 
-/** Gets reservations of user.
+/** Gets upcoming reservations of user.
  * 
  * @type {import('@sveltejs/kit').RequestHandler}
  * */
