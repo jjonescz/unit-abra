@@ -1,4 +1,5 @@
 <script>
+	import Employee from '$lib/ui/Employee.svelte';
 	import LoginScreen from './LoginScreen.svelte';
 </script>
 
@@ -7,3 +8,7 @@
 </svelte:head>
 
 <LoginScreen />
+
+<hr />
+
+<Employee />
