@@ -31,10 +31,10 @@ export async function deleteReservation(authorization, id) {
     else { return false; }
 }
 
-export async function createReservation(authorization, date, duration, slot) {
+export async function createReservation(authorization, date, duration, slot, user) {
     // Create new reservation on server.
     const query = new URLSearchParams({
-        user: 'team8.uzivatel1'
+        user: `team8.${user}`
     });
     const reservation = {
         start: date.toISOString(),

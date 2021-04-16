@@ -9,9 +9,11 @@
 		Form,
 		Modal,
 		NumberInput,
+		Select,
+		SelectItem,
 		TimePicker
 	} from 'carbon-components-svelte';
-	import { differenceInMinutes, format, parse, startOfDay, toDate } from 'date-fns';
+	import { differenceInMinutes, format, parse, startOfDay } from 'date-fns';
 	import { createEventDispatcher } from 'svelte';
 
 	export let open; // Toggles modal visibility.
@@ -22,7 +24,7 @@
 
 	const dispatchReservation = createEventDispatcher();
 	async function addReservation() {
-		const res = await createReservation(authorization, start, minutes, slot);
+		const res = await createReservation(authorization, start, minutes, slot, userInput);
 		if (res !== false) {
 			dispatchReservation('addReservation', {
 				r: { id: res.id, slot: slot, start: start, duration: minutes }
@@ -40,6 +42,7 @@
 	let dateInput;
 	let timeInput;
 	let durationInput = '1:00';
+	let userInput;
 
 	// Parsing
 	$: date = parse(dateInput, 'yyyy-MM-dd', now);
@@ -90,5 +93,14 @@
 			label="Parking slot"
 			invalidText={`Only ${parkingsMin} to ${parkingsMin + parkingsTotal}.`}
 		/>
+		<Select labelText="User" bind:value={userInput}>
+			{#each [...Array(6)] as _, i}
+				<SelectItem value={`manager${i + 1}`} text={`manager${i + 1}`} />
+			{/each}
+			{#each [...Array(32)] as _, i}
+				<SelectItem value={`uzivatel${i + 1}`} text={`manager${i + 1}`} />
+			{/each}
+			<SelectItem value="navsteva" text="navsteva" />
+		</Select>
 	</Form>
 </Modal>
