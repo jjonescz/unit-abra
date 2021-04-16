@@ -8,7 +8,8 @@
 		Form,
 		FluidForm,
 		Tile,
-		TimePicker
+		TimePicker,
+		DatePickerSkeleton
 	} from 'carbon-components-svelte';
 	import { TrashCan16 } from 'carbon-icons-svelte';
 
@@ -25,6 +26,8 @@
 		<DatePicker datePickerType="single" dateFormat="Y-m-d" minDate={now} bind:value={date}>
 			<DatePickerInput labelText="Date" placeholder="yyyy-mm-dd" pattern=".*" />
 		</DatePicker>
+	{:else}
+		<DatePickerSkeleton />
 	{/if}
 	<TimePicker labelText="Time" bind:value={time} />
 	<TimePicker labelText="Duration" bind:value={duration} />
