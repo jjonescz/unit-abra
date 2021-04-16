@@ -33,10 +33,12 @@
 		on:click={() =>
 			reservations.update((r) => {
 				const d = new Date(`${date} ${time}`);
-				r.unshift({ start: d, duration: 60, slot: 100 + Math.random() * 20 });
+				r.unshift({ start: d, duration: 60, slot: 100 + Math.round(Math.random() * 20) });
 				return r;
-			})}>Reserve</Button
+			})}
 	>
+		Reserve
+	</Button>
 </Form>
 
 <h2>Your reservations</h2>
@@ -44,7 +46,7 @@
 {#each $reservations as r, i}
 	<Tile>
 		<div>
-			{r.start} for {r.duration} minutes
+			{r.slot}: {r.start} for {r.duration} minutes
 		</div>
 		<div>
 			<Button
