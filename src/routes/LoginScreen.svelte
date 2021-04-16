@@ -33,7 +33,8 @@
 			// Save user as cookie.
 			const userJson = JSON.stringify({
 				username: username,
-				authorization: auth
+				authorization: auth,
+				role: data.role
 			});
 			document.cookie = `user=${userJson};path=/;max-age=${60 * 60 * 24 * 30};samesite=lax`;
 		} else {

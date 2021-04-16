@@ -33,7 +33,7 @@
 		<HeaderUtilities>
 			<HeaderAction>
 				<HeaderPanelLinks>
-					<HeaderPanelDivider>{user.username}</HeaderPanelDivider>
+					<HeaderPanelDivider>{user.username} ({user.role})</HeaderPanelDivider>
 					<HeaderPanelLink on:click={logout}>Log out</HeaderPanelLink>
 				</HeaderPanelLinks>
 			</HeaderAction>
