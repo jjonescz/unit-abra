@@ -34,6 +34,9 @@
 			<HeaderAction>
 				<HeaderPanelLinks>
 					<HeaderPanelDivider>{user.username} ({user.role})</HeaderPanelDivider>
+					{#if user.role === 'ADMIN'}
+						<HeaderPanelLink href="/sensors" rel="external">Manage sensors</HeaderPanelLink>
+					{/if}
 					<HeaderPanelLink on:click={logout}>Log out</HeaderPanelLink>
 				</HeaderPanelLinks>
 			</HeaderAction>
