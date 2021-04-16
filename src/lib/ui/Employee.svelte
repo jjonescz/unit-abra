@@ -36,6 +36,7 @@
 		return differenceInMinutes(date, startOfDay(date));
 	}
 
+	// Load reservations from server.
 	onMount(async () => {
 		const query = new URLSearchParams({
 			user: 'team8.uzivatel1'
@@ -50,6 +51,36 @@
 			reservations.set(data);
 		}
 	});
+
+	async function createReservation() {
+		// Create new reservation on server.
+		const query = new URLSearchParams({
+			user: 'team8.uzivatel1'
+		});
+		const reservation = {
+			start: dateTime,
+			duration: minutes
+		};
+		const response = await fetch(`/employee/reservations.json?${query}`, {
+			method: 'PUT',
+			headers: {
+				authorization: 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr'
+			},
+			body: JSON.stringify(reservation)
+		});
+
+		// Update UI.
+		if (response.ok) {
+			const data = await response.json();
+			reservations.update((r) => {
+				r.unshift({
+					...reservation,
+					...data
+				});
+				return r;
+			});
+		}
+	}
 </script>
 
 <h2>New reservation</h2>
@@ -73,20 +104,7 @@
 	<p>
 		Selected time {dateInput} => {dateTime} for {minutes} minutes.
 	</p>
-	<Button
-		type="submit"
-		on:click={() =>
-			reservations.update((r) => {
-				r.unshift({
-					start: dateTime,
-					duration: minutes,
-					slot: 100 + Math.round(Math.random() * 20)
-				});
-				return r;
-			})}
-	>
-		Reserve
-	</Button>
+	<Button type="submit" on:click={createReservation}>Reserve</Button>
 </Form>
 
 <h2>Your reservations</h2>

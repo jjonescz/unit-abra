@@ -1,4 +1,4 @@
-import { getReservations } from '$lib/server/employee'
+import { createReservation, getReservations } from '$lib/server/employee';
 
 /** Gets reservations of user.
  * 
@@ -9,5 +9,19 @@ export async function get({ query, headers }) {
     if (list)
         return {
             body: list
+        };
+}
+
+/** Creates new reservation for user.
+ * 
+ * @type {import('@sveltejs/kit').RequestHandler}
+ * */
+export async function put({ query, headers, body }) {
+    const data = JSON.parse(body);
+    const response = await createReservation(query.get('user'),
+        headers.authorization, new Date(data.start), data.duration);
+    if (response)
+        return {
+            body: response
         };
 }

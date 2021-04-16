@@ -28,6 +28,7 @@ export async function getReservations(userName, authorization) {
 
 export async function createReservation(userName, authorization, start, duration) {
     const response = await fetch(`${endpoint}/udalost.json`, {
+        method: 'PUT',
         headers: {
             'Authorization': authorization,
             'Content-Type': 'application/json'
@@ -46,5 +47,11 @@ export async function createReservation(userName, authorization, start, duration
         })
     });
     const data = await response.json();
-    return !!data.winstrom.success;
+    if (data.winstrom.success) {
+        return {
+            id: data.winstrom.results[0].id,
+            slot: 101 // TODO: Update when changing dynamically.
+        };
+    }
+    return null;
 }
