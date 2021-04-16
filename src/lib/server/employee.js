@@ -19,6 +19,7 @@ export async function getReservations(userName, authorization) {
         const end = new Date(u.dokonceni);
         const slot = /code:(.*)/.exec(u.zakazka)[1];
         return {
+            id: u.id,
             start: start,
             duration: differenceInMinutes(end, start),
             slot: slot
