@@ -26,13 +26,17 @@
 	// Display reservations.
 	onMount(async () => {
 		dayReservations.forEach((r) => {
-			const app = new CalendarReservation({
-				target: document.querySelector(`[data-id="${r.spot}-${r.start}"`),
-				hydrate: true,
-				props: { r }
-			});
+			displayReservation(r);
 		});
 	});
+
+	function displayReservation(r) {
+		new CalendarReservation({
+			target: document.querySelector(`[data-id="${r.spot}-${r.start}"`),
+			hydrate: true,
+			props: { r }
+		});
+	}
 
 	// Create new reservations.
 	let newOpen = false;
@@ -43,6 +47,12 @@
 		newOpen = true;
 		newSpot = spot;
 		newStart = start;
+	}
+
+	// Add new reservation.
+	function addReservation(e) {
+		const r = e.detail.r;
+		displayReservation(r);
 	}
 </script>
 
@@ -74,7 +84,12 @@
 		</tr>
 	{/each}
 </table>
-<NewReservation bind:open={newOpen} spot={newSpot} start={newStart} />
+<NewReservation
+	on:addReservation={addReservation}
+	bind:open={newOpen}
+	spot={newSpot}
+	start={newStart}
+/>
 
 <style lang="scss">
 	table {

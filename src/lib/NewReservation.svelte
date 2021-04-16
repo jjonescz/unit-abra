@@ -1,23 +1,26 @@
 <script>
 	import { parkingSpots } from '$lib/db.js';
 	import { Modal, NumberInput, TimePicker, Form } from 'carbon-components-svelte';
+	import { createEventDispatcher } from 'svelte';
 
 	export let open; // Toggles modal visibility.
 	export let spot; // Selected parking spot.
 	export let start;
-	export let duration = 1;
+	$: end = Math.min(start + 1, 24);
 
-	export let r = { spot: 0, start: 0, duration: 0 };
-
+	const dispatchReservation = createEventDispatcher();
 	function createReservation() {
-		// TODO: request delete via API.
-		alert(spot);
+		// TODO: request insert via API.
+		dispatchReservation('addReservation', {
+			r: { spot: spot, start: start, duration: end - start }
+		});
+		open = false;
 	}
 </script>
 
 <Modal
 	bind:open
-	modalHeading="New reservation {r.start} - {r.start + r.duration}"
+	modalHeading="New reservation {start} - {end}"
 	primaryButtonText="Confirm"
 	secondaryButtonText="Cancel"
 	on:click:button--secondary={() => (open = false)}
@@ -26,9 +29,9 @@
 	on:submit={createReservation}
 >
 	<Form on:submit={createReservation}>
-		<NumberInput mobile min={1} max={parkingSpots} value={spot} label="Parking spot" />
-		<TimePicker value={start} labelText="Start" placeholder="hh:mm" />
-		<TimePicker value={start + duration} labelText="End" placeholder="hh:mm" />
+		<NumberInput bind:value={spot} mobile min={1} max={parkingSpots} label="Parking spot" />
+		<TimePicker bind:value={start} labelText="Start" placeholder="hh:mm" />
+		<TimePicker bind:value={end} labelText="End" placeholder="hh:mm" />
 	</Form>
 </Modal>
 
