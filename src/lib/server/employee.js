@@ -1,12 +1,12 @@
 import { differenceInMinutes } from 'date-fns';
 import fetch from 'node-fetch';
 
-const endpoint = 'https://rezervace.flexibee.eu/c/rezervace8';
+const endpoint = 'https://rezervace.flexibee.eu/v2/c/rezervace8';
 
 export async function getReservations(userName, authorization) {
     const userEncoded = encodeURIComponent(userName);
     const query = new URLSearchParams({
-        detail: 'custom:zahajeni,dokonceni,zakazka(kod)'
+        detail: 'custom:zahajeni,dokonceni,zakazka'
     });
     const response = await fetch(`${endpoint}/udalost/(zodpPrac = "code:${userEncoded}").json?${query}`, {
         headers: {
