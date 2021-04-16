@@ -15,7 +15,6 @@
 	// Display reservations.
 	onMount(async () => {
 		const data = await getReservations(authorization, date);
-		console.log(data);
 		data.forEach((r) => {
 			r.start = parseISO(r.start);
 			displayReservation(r);
@@ -23,7 +22,6 @@
 	});
 
 	function displayReservation(r) {
-		console.log(r);
 		new CalendarReservation({
 			target: document.querySelector(`[data-id="${r.slot}-${getHours(r.start)}"`),
 			hydrate: true,
@@ -50,7 +48,6 @@
 	// Add new reservation.
 	function addReservation(e) {
 		const r = e.detail.r;
-		console.log(r);
 		displayReservation(r);
 	}
 

@@ -21,15 +21,12 @@
 	let authorization = 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr';
 
 	const dispatchReservation = createEventDispatcher();
-	function addReservation() {
-		if (createReservation(authorization, start, minutes, slot)) {
-			console.log(start);
-
+	async function addReservation() {
+		const res = await createReservation(authorization, start, minutes, slot);
+		if (res !== false) {
 			dispatchReservation('addReservation', {
-				// TODO: Return ID!
-				r: { slot: slot, start: start, duration: minutes }
+				r: { id: res.id, slot: slot, start: start, duration: minutes }
 			});
-			alert(`Reservation for........`);
 			open = false;
 		} else {
 			alert('Your reservation could not be created, please try again.');

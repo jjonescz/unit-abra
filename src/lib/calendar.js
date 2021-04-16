@@ -4,7 +4,6 @@ export async function getReservations(authorization, date) {
     const query = new URLSearchParams({
         date: date.toISOString()
     });
-    console.log(`${endpoint}${query}`);
     const response = await fetch(`${endpoint}${query}`, {
         headers: {
             authorization: authorization
@@ -50,7 +49,8 @@ export async function createReservation(authorization, date, duration, slot) {
         body: JSON.stringify(reservation)
     });
     if (response.ok) {
-        return true;
+        return await response.json();
+
     }
     else {
         return false;
