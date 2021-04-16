@@ -56,3 +56,14 @@ export async function createReservation(userName, authorization, start, duration
     }
     return null;
 }
+
+export async function deleteReservation(authorization, id) {
+    const encodedId = encodeURIComponent(id);
+    const response = await fetch(`${endpoint}/udalost/${encodedId}.json`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': authorization
+        }
+    });
+    return response.ok;
+}

@@ -81,6 +81,31 @@
 			});
 		}
 	}
+
+	async function deleteReservation(id) {
+		// Delete reservation on server.
+		const query = new URLSearchParams({
+			id: id,
+			user: 'team8.uzivatel1'
+		});
+		const response = await fetch(`/employee/reservations.json?${query}`, {
+			method: 'DELETE',
+			headers: {
+				authorization: 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr'
+			}
+		});
+
+		// Update UI.
+		if (response.ok) {
+			reservations.update((r) => {
+				r.splice(
+					r.findIndex((x) => x.id === id),
+					1
+				);
+				return r;
+			});
+		}
+	}
 </script>
 
 <h2>New reservation</h2>
@@ -109,7 +134,7 @@
 
 <h2>Your reservations</h2>
 
-{#each $reservations as r, i}
+{#each $reservations as r}
 	<Tile>
 		<div>
 			{r.slot}: {format(new Date(r.start), 'yyyy-MM-dd HH:mm')} for {r.duration} minutes
@@ -119,11 +144,7 @@
 				kind="danger-tertiary"
 				iconDescription="Delete"
 				icon={TrashCan16}
-				on:click={() =>
-					reservations.update((r) => {
-						r.splice(i, 1);
-						return r;
-					})}
+				on:click={() => deleteReservation(r.id)}
 			/>
 		</div>
 	</Tile>
