@@ -21,15 +21,7 @@
 			r: r
 		});
 	}
-	const slotColors = [
-		'tomato',
-		'aquamarine',
-		'orchid',
-		'navy',
-		'palegoldenrod',
-		'forestgreen',
-		'mediumslateblue'
-	];
+	const slotColors = ['var(--cds-interactive-01)', 'var(--cds-interactive-02)'];
 
 	$: end = addMinutes(r.start, r.duration);
 	$: left = isBefore(r.start, date) ? 0 : (getMinutes(r.start) * 100) / 60;
