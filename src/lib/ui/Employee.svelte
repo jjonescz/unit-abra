@@ -125,26 +125,25 @@
 		<DatePicker datePickerType="single" dateFormat="Y-m-d" {minDate} bind:value={dateInput}>
 			<DatePickerInput labelText="Date" placeholder="yyyy-mm-dd" pattern=".*" />
 		</DatePicker>
+		<TimePicker
+			labelText="Time"
+			bind:value={timeInput}
+			pattern=".*"
+			invalid={!isValid(dateTime)}
+			invalidText="Invalid time."
+		/>
+		<TimePicker
+			labelText="Duration"
+			bind:value={durationInput}
+			pattern=".*"
+			invalid={durationTooLong || isNaN(minutes)}
+			invalidText={durationTooLong ? 'You can reserve at most 8 hours.' : 'Invalid duration.'}
+		/>
 	{:else}
 		<DatePickerSkeleton />
+		<DatePickerSkeleton />
+		<DatePickerSkeleton />
 	{/if}
-	<TimePicker
-		labelText="Time"
-		bind:value={timeInput}
-		pattern=".*"
-		invalid={!isValid(dateTime)}
-		invalidText="Invalid time."
-	/>
-	<TimePicker
-		labelText="Duration"
-		bind:value={durationInput}
-		pattern=".*"
-		invalid={durationTooLong || isNaN(minutes)}
-		invalidText={durationTooLong ? 'You can reserve at most 8 hours.' : 'Invalid duration.'}
-	/>
-	<p>
-		Selected time {dateInput} => {dateTime} for {minutes} minutes.
-	</p>
 	<Button type="submit" on:click={createReservation}>Reserve</Button>
 </Form>
 
