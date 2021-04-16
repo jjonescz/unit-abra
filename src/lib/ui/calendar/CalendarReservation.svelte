@@ -1,7 +1,7 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
 	import { parkingsMin } from '$lib/db.js';
-	import { getHours, addMinutes, getMinutes } from 'date-fns';
+	import { getHours, addMinutes, getMinutes, getDay } from 'date-fns';
 
 	export let r = {};
 
@@ -20,13 +20,18 @@
 		'forestgreen',
 		'mediumslateblue'
 	];
+
+	$: left = (getMinutes(r.start) * 100) / 60;
+	$: spreadBorders =
+		getDay(r.start) === getDay(addMinutes(r.start, r.duration))
+			? getHours(addMinutes(r.start, r.duration)) - getHours(r.start)
+			: 23 - getHours(r.start);
 </script>
 
 <button
-	style="width: calc({(r.duration * 100) / 60}% + {getHours(addMinutes(r.start, r.duration)) -
-		getHours(r.start)}px); background-color: {slotColors[
+	style="width: calc({(r.duration * 100) / 60}% + {spreadBorders}px); background-color: {slotColors[
 		(r.slot - parkingsMin) % slotColors.length
-	]}; left: {(getMinutes(r.start) * 100) / 60}%"
+	]}; left: {left}%; max-width: calc({(24 - getHours(r.start)) * 100 - left}% + {spreadBorders}px)"
 	on:click={clickReservation}
 />
 
