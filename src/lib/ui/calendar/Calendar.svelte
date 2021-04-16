@@ -12,9 +12,16 @@
 	let date = new Date();
 	let authorization = 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr';
 
+	let reservations = {};
+
 	// Display reservations.
 	async function dayReservations(date) {
+		console.log(reservations);
+		for (const [_, r] of Object.entries(reservations)) {
+			r.$destroy();
+		}
 		const data = await getReservations(authorization, date);
+		console.log(data);
 		data.forEach((r) => {
 			r.start = parseISO(r.start);
 			displayReservation(r);
@@ -25,16 +32,18 @@
 	}
 
 	function displayReservation(r) {
-		new CalendarReservation({
+		const component = new CalendarReservation({
 			target: document.querySelector(`[data-id="${r.slot}-${getHours(r.start)}"`),
 			hydrate: true,
 			props: { r }
-		}).$on('clicked', function (e) {
+		});
+		component.$on('clicked', function (e) {
 			delR = e.detail.r;
 			newOpen = false; // Close if opened.
 			delOpen = true;
 			toDelete = this;
 		});
+		reservations[r.id] = component;
 	}
 
 	// Create new reservations.
@@ -61,6 +70,7 @@
 	function deleteReservation(e) {
 		if (e.detail.delete) {
 			toDelete.$destroy();
+			delete reservations[delR.id];
 		}
 		toDelete = {};
 	}
