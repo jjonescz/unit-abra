@@ -29,6 +29,8 @@
 	"dependencies": {
 		"carbon-components-svelte": "^0.32.1",
 		"carbon-icons-svelte": "^10.28.0",
-		"carbon-pictograms-svelte": "^11.2.0"
+		"carbon-pictograms-svelte": "^11.2.0",
+		"date-fns": "^2.21.1",
+		"node-fetch": "^2.6.1"
 	}
 }

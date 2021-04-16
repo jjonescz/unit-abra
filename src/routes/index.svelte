@@ -1,11 +1,14 @@
 <script>
-	import { Button } from 'carbon-components-svelte';
-
-	let count = 0;
+	import Employee from '$lib/ui/Employee.svelte';
+	import LoginScreen from './LoginScreen.svelte';
 </script>
 
 <svelte:head>
 	<title />
 </svelte:head>
 
-<Button on:click={() => count++}>Test {count}</Button>
+<LoginScreen />
+
+<hr />
+
+<Employee />
