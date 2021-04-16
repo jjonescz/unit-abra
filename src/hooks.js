@@ -14,7 +14,8 @@ export function getSession({ context }) {
     return {
         user: context.user && {
             username: context.user.username,
-            authorization: context.user.authorization
+            authorization: context.user.authorization,
+            role: context.user.role
         }
     };
 }
