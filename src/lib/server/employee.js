@@ -6,9 +6,10 @@ const endpoint = 'https://rezervace.flexibee.eu/v2/c/rezervace8';
 export async function getReservations(userName, authorization) {
     const userEncoded = encodeURIComponent(userName);
     const query = new URLSearchParams({
-        detail: 'custom:zahajeni,dokonceni,zakazka'
+        detail: 'custom:zahajeni,dokonceni,zakazka',
+        order: 'zahajeni@A'
     });
-    const response = await fetch(`${endpoint}/udalost/(zodpPrac = "code:${userEncoded}").json?${query}`, {
+    const response = await fetch(`${endpoint}/udalost/(zodpPrac = "code:${userEncoded}" and dokonceni >= now()).json?${query}`, {
         headers: {
             'Authorization': authorization
         }

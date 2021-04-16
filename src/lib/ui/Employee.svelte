@@ -5,16 +5,18 @@
 		DatePicker,
 		DatePickerInput,
 		DatePickerSkeleton,
-		Form,
+		SkeletonPlaceholder,
 		Tile,
 		TimePicker
 	} from 'carbon-components-svelte';
-	import { TrashCan16 } from 'carbon-icons-svelte';
-	import { differenceInMinutes, format, parse, startOfDay } from 'date-fns';
+	import { TrashCan16, WatsonHealthRotate_36016 } from 'carbon-icons-svelte';
+	import { differenceInMinutes, format, isValid, parse, startOfDay } from 'date-fns';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
-	const reservations = writable([]);
+	const reservations = writable(null);
+
+	export let user;
 
 	const now = new Date();
 	const minDate = format(now, 'yyyy-MM-dd');
@@ -36,26 +38,29 @@
 		return differenceInMinutes(date, startOfDay(date));
 	}
 
-	// Load reservations from server.
-	onMount(async () => {
+	async function loadReservations() {
+		// Load reservations from server.
 		const query = new URLSearchParams({
-			user: 'team8.uzivatel1'
+			user: user.username
 		});
 		const response = await fetch(`/employee/reservations.json?${query}`, {
 			headers: {
-				authorization: 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr'
+				authorization: user.authorization
 			}
 		});
+
+		// Update UI.
 		if (response.ok) {
 			const data = await response.json();
 			reservations.set(data);
 		}
-	});
+	}
+	onMount(() => loadReservations());
 
 	async function createReservation() {
 		// Create new reservation on server.
 		const query = new URLSearchParams({
-			user: 'team8.uzivatel1'
+			user: user.username
 		});
 		const reservation = {
 			start: dateTime,
@@ -64,7 +69,7 @@
 		const response = await fetch(`/employee/reservations.json?${query}`, {
 			method: 'PUT',
 			headers: {
-				authorization: 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr'
+				authorization: user.authorization
 			},
 			body: JSON.stringify(reservation)
 		});
@@ -73,10 +78,14 @@
 		if (response.ok) {
 			const data = await response.json();
 			reservations.update((r) => {
-				r.unshift({
+				r.push({
 					...reservation,
 					...data
 				});
+
+				// Sort by start date ascending.
+				r.sort((a, b) => differenceInMinutes(new Date(a.start), new Date(b.start)));
+
 				return r;
 			});
 		}
@@ -86,12 +95,12 @@
 		// Delete reservation on server.
 		const query = new URLSearchParams({
 			id: id,
-			user: 'team8.uzivatel1'
+			user: user.username
 		});
 		const response = await fetch(`/employee/reservations.json?${query}`, {
 			method: 'DELETE',
 			headers: {
-				authorization: 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr'
+				authorization: user.authorization
 			}
 		});
 
@@ -110,44 +119,139 @@
 
 <h2>New reservation</h2>
 
-<Form>
+<div class="group">
 	{#if browser}
 		<DatePicker datePickerType="single" dateFormat="Y-m-d" {minDate} bind:value={dateInput}>
 			<DatePickerInput labelText="Date" placeholder="yyyy-mm-dd" pattern=".*" />
+			<TimePicker
+				labelText="Time"
+				bind:value={timeInput}
+				pattern=".*"
+				invalid={!isValid(dateTime)}
+				invalidText="Invalid time."
+			/>
+			<TimePicker
+				labelText="Duration"
+				bind:value={durationInput}
+				pattern=".*"
+				invalid={durationTooLong || isNaN(minutes)}
+				invalidText={durationTooLong ? 'You can reserve at most 8 hours.' : 'Invalid duration.'}
+			/>
 		</DatePicker>
 	{:else}
 		<DatePickerSkeleton />
 	{/if}
-	<TimePicker labelText="Time" bind:value={timeInput} pattern=".*" />
-	<TimePicker
-		labelText="Duration"
-		bind:value={durationInput}
-		pattern=".*"
-		invalid={durationTooLong}
-		invalidText={durationTooLong ? 'You can reserve at most 8 hours.' : null}
-	/>
-	<p>
-		Selected time {dateInput} => {dateTime} for {minutes} minutes.
-	</p>
+</div>
+<div class="group">
 	<Button type="submit" on:click={createReservation}>Reserve</Button>
-</Form>
+</div>
 
-<h2>Your reservations</h2>
+<h2 style="margin-top: 2rem; margin-bottom: 1rem;">
+	<span style="margin-right: 0.5rem;">Your reservations</span>
+	<Button
+		kind="tertiary"
+		iconDescription="Refresh"
+		icon={WatsonHealthRotate_36016}
+		on:click={() => {
+			reservations.set(null);
+			loadReservations();
+		}}
+	/>
+</h2>
 
-{#each $reservations as r}
-	<Tile>
-		<div>
-			{r.slot}: {format(new Date(r.start), 'yyyy-MM-dd HH:mm')} for {r.duration} minutes
-		</div>
-		<div>
-			<Button
-				kind="danger-tertiary"
-				iconDescription="Delete"
-				icon={TrashCan16}
-				on:click={() => deleteReservation(r.id)}
-			/>
-		</div>
-	</Tile>
+{#if $reservations == null}
+	<SkeletonPlaceholder style="width: 100%; height: 5rem;" />
 {:else}
-	<em>No reservations yet.</em>
-{/each}
+	{#each $reservations as r (r.id)}
+		<Tile style="margin-bottom: 0.5rem;">
+			<div class="reservation">
+				<div class="slot">
+					{r.slot}
+				</div>
+				<div class="time">
+					{format(new Date(r.start), 'yyyy-MM-dd HH:mm')}
+				</div>
+				<div class="duration">
+					{r.duration} minute{r.duration === 1 ? '' : 's'}
+				</div>
+				<div class="delete">
+					<Button
+						kind="danger-tertiary"
+						iconDescription="Delete"
+						icon={TrashCan16}
+						on:click={() => deleteReservation(r.id)}
+					/>
+				</div>
+			</div>
+		</Tile>
+	{:else}
+		<em>No reservations yet.</em>
+	{/each}
+{/if}
+
+<style lang="scss">
+	.group {
+		margin-bottom: 1rem;
+	}
+
+	:global(.bx--date-picker) {
+		flex-wrap: wrap;
+	}
+
+	:global(.bx--date-picker > div) {
+		margin-top: 0.5rem;
+		margin-right: 0.125rem;
+	}
+
+	.reservation {
+		display: flex;
+		align-items: center;
+
+		@media (max-width: 640px) {
+			flex-wrap: wrap;
+		}
+
+		> div {
+			padding-right: 1rem;
+
+			@media (max-width: 640px) {
+				flex: 1 0 auto;
+			}
+		}
+
+		> .slot,
+		> .duration {
+			@media (max-width: 640px) {
+				width: 30%;
+			}
+		}
+
+		> .time,
+		> .delete {
+			@media (max-width: 640px) {
+				width: 70%;
+			}
+		}
+
+		> .slot {
+			font-size: 3rem;
+
+			@media (max-width: 640px) {
+				font-size: 2rem;
+			}
+		}
+
+		> .time {
+			font-size: 1.5rem;
+
+			@media (max-width: 640px) {
+				font-size: 1rem;
+			}
+		}
+
+		> .delete {
+			margin-left: auto;
+			text-align: right;
+		}
+	}
+</style>

@@ -24,7 +24,7 @@ module.exports = {
 
 			optimizeDeps: {
 				// See https://github.com/IBM/carbon-components-svelte/issues/598.
-				include: ['clipboard-copy']
+				include: ['cookie', 'clipboard-copy']
 			},
 		}
 	}
