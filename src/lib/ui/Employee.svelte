@@ -1,5 +1,4 @@
 <script>
-	import { reservations } from '$lib/server/employee';
 	import { browser } from '$app/env';
 	import {
 		Button,
@@ -12,9 +11,12 @@
 	} from 'carbon-components-svelte';
 	import { TrashCan16 } from 'carbon-icons-svelte';
 	import dayjs from 'dayjs';
-	import customParseFormatPlugin from 'dayjs/plugin/customParseFormat';
-	import durationPlugin from 'dayjs/plugin/duration';
-	import relativeTimePlugin from 'dayjs/plugin/relativeTime';
+	import customParseFormatPlugin from 'dayjs/plugin/customParseFormat.js';
+	import durationPlugin from 'dayjs/plugin/duration.js';
+	import relativeTimePlugin from 'dayjs/plugin/relativeTime.js';
+	import { writable } from 'svelte/store';
+
+	const reservations = writable([]);
 
 	dayjs.extend(customParseFormatPlugin);
 	dayjs.extend(durationPlugin);
