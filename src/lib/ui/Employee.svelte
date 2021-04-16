@@ -10,39 +10,29 @@
 		DatePickerSkeleton
 	} from 'carbon-components-svelte';
 	import { TrashCan16 } from 'carbon-icons-svelte';
-	import dayjs from 'dayjs';
-	import customParseFormatPlugin from 'dayjs/plugin/customParseFormat.js';
-	import durationPlugin from 'dayjs/plugin/duration.js';
-	import relativeTimePlugin from 'dayjs/plugin/relativeTime.js';
+	import { format, getHours, getMinutes, parse } from 'date-fns';
 	import { writable } from 'svelte/store';
 
 	const reservations = writable([]);
 
-	dayjs.extend(customParseFormatPlugin);
-	dayjs.extend(durationPlugin);
-	dayjs.extend(relativeTimePlugin);
-
-	let now = dayjs(new Date());
+	const now = new Date();
+	const minDate = format(now, 'yyyy-MM-dd');
 
 	// User inputs
-	let dateInput = now.format('YYYY-MM-DD');
-	let timeInput = now.format('H:mm');
+	let dateInput = format(now, 'yyyy-MM-dd');
+	let timeInput = format(now, 'H:mm');
 	let durationInput = '1:00';
 
 	// Parsing
-	$: date = dayjs(dateInput, 'YYYY-MM-DD', true);
-	$: time = dayjs(timeInput, ['HH:mm', 'H:mm'], true);
-	$: duration = dayjs(durationInput, ['HH:mm', 'H:mm'], true);
-
-	$: timeDur = toDuration(time);
-	$: durationDur = toDuration(duration);
-	$: fullDate = date.startOf('day').add(timeDur);
+	$: date = parse(dateInput, 'yyyy-MM-dd', now);
+	$: dateTime = parse(timeInput, 'H:mm', date);
+	$: minutes = totalMinutes(parse(durationInput, 'H:mm', now));
 
 	// Validation
-	$: durationTooLong = durationDur.asHours() > 8;
+	$: durationTooLong = minutes > 8 * 60;
 
-	function toDuration(date) {
-		return dayjs.duration(date.diff(date.startOf('day')));
+	function totalMinutes(date) {
+		return getHours(date) * 60 + getMinutes(date);
 	}
 </script>
 
@@ -50,7 +40,7 @@
 
 <Form>
 	{#if browser}
-		<DatePicker datePickerType="single" dateFormat="Y-m-d" minDate={now} bind:value={dateInput}>
+		<DatePicker datePickerType="single" dateFormat="Y-m-d" {minDate} bind:value={dateInput}>
 			<DatePickerInput labelText="Date" placeholder="yyyy-mm-dd" pattern=".*" />
 		</DatePicker>
 	{:else}
@@ -65,17 +55,15 @@
 		invalidText={durationTooLong ? 'You can reserve at most 8 hours.' : null}
 	/>
 	<p>
-		Selected time {timeDur.humanize()}, duration {durationDur.humanize()}. Date: {fullDate.format(
-			'YYYY-MM-DD HH:mm'
-		)}.
+		Selected time {dateInput} => {dateTime} for {minutes} minutes.
 	</p>
 	<Button
 		type="submit"
 		on:click={() =>
 			reservations.update((r) => {
 				r.unshift({
-					start: fullDate,
-					duration: durationDur.asMinutes(),
+					start: dateTime,
+					duration: minutes,
 					slot: 100 + Math.round(Math.random() * 20)
 				});
 				return r;
@@ -90,7 +78,7 @@
 {#each $reservations as r, i}
 	<Tile>
 		<div>
-			{r.slot}: {r.start.format('YYYY-MM-DD HH:mm')} for {r.duration} minutes
+			{r.slot}: {format(r.start, 'yyyy-MM-dd HH:mm')} for {r.duration} minutes
 		</div>
 		<div>
 			<Button
