@@ -1,14 +1,16 @@
 <script>
 	import Employee from '$lib/ui/Employee.svelte';
 	import LoginScreen from './LoginScreen.svelte';
+
+	let user;
 </script>
 
 <svelte:head>
 	<title />
 </svelte:head>
 
-<LoginScreen />
-
-<hr />
-
-<Employee />
+{#if !user}
+	<LoginScreen bind:user />
+{:else}
+	<Employee />
+{/if}
