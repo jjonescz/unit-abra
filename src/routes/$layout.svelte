@@ -1,0 +1,6 @@
+<script>
+	import 'carbon-components-svelte/css/all.css';
+	import '../app.scss';
+</script>
+
+<slot />
