@@ -6,6 +6,7 @@
 		DatePickerInput,
 		DatePickerSkeleton,
 		Form,
+		SkeletonPlaceholder,
 		Tile,
 		TimePicker
 	} from 'carbon-components-svelte';
@@ -14,7 +15,7 @@
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
-	const reservations = writable([]);
+	const reservations = writable(null);
 
 	export let user;
 
@@ -149,20 +150,24 @@
 	on:click={() => loadReservations()}
 />
 
-{#each $reservations as r (r.id)}
-	<Tile>
-		<div>
-			{r.slot}: {format(new Date(r.start), 'yyyy-MM-dd HH:mm')} for {r.duration} minutes
-		</div>
-		<div>
-			<Button
-				kind="danger-tertiary"
-				iconDescription="Delete"
-				icon={TrashCan16}
-				on:click={() => deleteReservation(r.id)}
-			/>
-		</div>
-	</Tile>
+{#if $reservations == null}
+	<SkeletonPlaceholder style="width: 100%; height: 2rem;" />
 {:else}
-	<em>No reservations yet.</em>
-{/each}
+	{#each $reservations as r (r.id)}
+		<Tile>
+			<div>
+				{r.slot}: {format(new Date(r.start), 'yyyy-MM-dd HH:mm')} for {r.duration} minutes
+			</div>
+			<div>
+				<Button
+					kind="danger-tertiary"
+					iconDescription="Delete"
+					icon={TrashCan16}
+					on:click={() => deleteReservation(r.id)}
+				/>
+			</div>
+		</Tile>
+	{:else}
+		<em>No reservations yet.</em>
+	{/each}
+{/if}
