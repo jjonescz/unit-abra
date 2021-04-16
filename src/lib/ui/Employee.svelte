@@ -32,8 +32,12 @@
 		type="submit"
 		on:click={() =>
 			reservations.update((r) => {
-				const d = new Date(`${date} ${time}`);
-				r.unshift({ start: d, duration: 60, slot: 100 + Math.round(Math.random() * 20) });
+				const s = `${new Date(date).toDateString()} ${time}`;
+				r.unshift({
+					start: new Date(s),
+					duration: 60,
+					slot: 100 + Math.round(Math.random() * 20)
+				});
 				return r;
 			})}
 	>
