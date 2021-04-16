@@ -1,10 +1,10 @@
 <script>
-	import { parkingSpots } from '$lib/db.js';
+	import { parkingslots } from '$lib/db.js';
 	import { Modal, NumberInput, TimePicker, Form } from 'carbon-components-svelte';
 	import { createEventDispatcher } from 'svelte';
 
 	export let open; // Toggles modal visibility.
-	export let spot; // Selected parking spot.
+	export let slot; // Selected parking slot.
 	export let start;
 	$: end = Math.min(start + 1, 24);
 
@@ -12,7 +12,7 @@
 	function createReservation() {
 		// TODO: request insert via API.
 		dispatchReservation('addReservation', {
-			r: { spot: spot, start: start, duration: end - start }
+			r: { slot: slot, start: start, duration: end - start }
 		});
 		open = false;
 	}
@@ -29,7 +29,7 @@
 	on:submit={createReservation}
 >
 	<Form on:submit={createReservation}>
-		<NumberInput bind:value={spot} mobile min={1} max={parkingSpots} label="Parking spot" />
+		<NumberInput bind:value={slot} mobile min={1} max={parkingslots} label="Parking slot" />
 		<TimePicker bind:value={start} labelText="Start" placeholder="hh:mm" />
 		<TimePicker bind:value={end} labelText="End" placeholder="hh:mm" />
 	</Form>

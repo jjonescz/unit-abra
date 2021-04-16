@@ -1,7 +1,7 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
 
-	export let r = { spot: 0, start: 0, duration: 0 };
+	export let r = {};
 
 	const dispatchReservation = createEventDispatcher();
 	function clickReservation() {
@@ -9,7 +9,7 @@
 			r: r
 		});
 	}
-	const spotColors = [
+	const slotColors = [
 		'tomato',
 		'aquamarine',
 		'orchid',
@@ -21,8 +21,8 @@
 </script>
 
 <button
-	style="width: calc({r.duration * 100}% + {r.duration - 1}px); background-color: {spotColors[
-		r.spot % spotColors.length
+	style="width: calc({r.duration * 100}% + {r.duration - 1}px); background-color: {slotColors[
+		r.slot % slotColors.length
 	]};"
 	on:click={clickReservation}
 />

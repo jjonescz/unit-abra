@@ -26,5 +26,5 @@
 	on:close
 	on:submit={deleteReservation}
 >
-	<p>Reservation on parking spot {r.spot}</p>
+	<p>Reservation on parking slot {r.slot}</p>
 </Modal>

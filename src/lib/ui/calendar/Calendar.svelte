@@ -1,39 +1,28 @@
 <script>
-	import { parkingSpots } from '$lib/db.js';
+	import { parkingslots } from '$lib/db.js';
 	import { Button } from 'carbon-components-svelte';
 	import { ChevronLeftGlyph, ChevronRightGlyph } from 'carbon-icons-svelte';
 	import { onMount } from 'svelte';
 	import CalendarReservation from '$lib/ui/calendar/CalendarReservation.svelte';
 	import DeleteReservation from '$lib/ui/calendar/DeleteReservation.svelte';
 	import NewReservation from '$lib/ui/calendar/NewReservation.svelte';
+	import { getReservations } from '$lib/calendar';
 
-	let dayReservations = [
-		{ spot: 1, start: 9, duration: 8 },
-		{ spot: 3, start: 9, duration: 3 },
-		{ spot: 3, start: 1, duration: 3 },
-		{ spot: 4, start: 1, duration: 3 },
-		{ spot: 5, start: 10, duration: 3 },
-		{ spot: 6, start: 15, duration: 3 },
-		{ spot: 7, start: 1, duration: 3 },
-		{ spot: 8, start: 12, duration: 3 },
-		{ spot: 9, start: 1, duration: 3 },
-		{ spot: 13, start: 1, duration: 3 },
-		{ spot: 15, start: 1, duration: 3 },
-		{ spot: 20, start: 15, duration: 3 },
-		{ spot: 16, start: 18, duration: 3 },
-		{ spot: 5, start: 19, duration: 3 }
-	];
+	let date = new Date().toISOString();
+	let authorization = 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr';
 
 	// Display reservations.
 	onMount(async () => {
-		dayReservations.forEach((r) => {
+		const data = await getReservations(authorization, date);
+		console.log(data);
+		data.forEach((r) => {
 			displayReservation(r);
 		});
 	});
 
 	function displayReservation(r) {
 		new CalendarReservation({
-			target: document.querySelector(`[data-id="${r.spot}-${r.start}"`),
+			target: document.querySelector(`[data-id="${r.slot}-${r.start}"`),
 			hydrate: true,
 			props: { r }
 		}).$on('clicked', function () {
@@ -45,12 +34,12 @@
 
 	// Create new reservations.
 	let newOpen = false;
-	let newSpot = false;
+	let newslot = false;
 	let newStart = false;
 
-	function createReservation(spot, start) {
+	function createReservation(slot, start) {
 		newOpen = true && !delOpen; // We don't want to open both modals.
-		newSpot = spot;
+		newslot = slot;
 		newStart = start;
 	}
 
@@ -86,14 +75,14 @@
 			<th scope="col">{hour + 1}</th>
 		{/each}
 	</tr>
-	{#each [...Array(parkingSpots)] as _, spot}
+	{#each [...Array(parkingslots)] as _, slot}
 		<tr>
-			<th scope="row">{spot + 1}</th>
+			<th scope="row">{slot + 1}</th>
 			{#each [...Array(24)] as _, hour}
 				<!-- Mark table cells for positioning of reservations. -->
 				<td
-					data-id="{spot + 1}-{hour + 1}"
-					on:click={() => createReservation(spot + 1, hour + 1)}
+					data-id="{slot + 1}-{hour + 1}"
+					on:click={() => createReservation(slot + 1, hour + 1)}
 				/>
 			{/each}
 		</tr>
@@ -102,7 +91,7 @@
 <NewReservation
 	on:addReservation={addReservation}
 	bind:open={newOpen}
-	spot={newSpot}
+	slot={newslot}
 	start={newStart}
 />
 <DeleteReservation bind:open={delOpen} on:deleteReservation={deleteReservation} />
