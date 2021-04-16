@@ -5,7 +5,7 @@ import { getReservations } from '$lib/server/employee'
  * @type {import('@sveltejs/kit').RequestHandler}
  * */
 export async function get({ query, headers }) {
-    const list = await getReservations(query['user'], headers['Authorization']);
+    const list = await getReservations(query.get('user'), headers.authorization);
     if (list)
         return {
             body: list

@@ -3,18 +3,18 @@ import fetch from 'node-fetch';
 
 const endpoint = 'https://rezervace.flexibee.eu/c/rezervace8';
 
-export async function getReservations(userName, authentication) {
+export async function getReservations(userName, authorization) {
     const userEncoded = encodeURIComponent(userName);
     const query = new URLSearchParams({
-        data: 'custom:zahajeni,dokonceni,zakazka(kod)'
+        detail: 'custom:zahajeni,dokonceni,zakazka(kod)'
     });
     const response = await fetch(`${endpoint}/udalost/(zodpPrac = "code:${userEncoded}").json?${query}`, {
         headers: {
-            'Authorization': authentication
+            'Authorization': authorization
         }
     });
     const data = await response.json();
-    return data.winstorm.udalost.map(u => {
+    return data.winstrom.udalost.map(u => {
         const start = new Date(u.zahajeni);
         const end = new Date(u.dokonceni);
         const slot = /code:(.*)/.exec(u.zakazka)[1];
