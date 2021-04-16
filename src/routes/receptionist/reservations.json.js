@@ -19,7 +19,7 @@ export async function get({ query, headers }) {
 export async function put({ query, headers, body }) {
     const data = JSON.parse(body);
     const response = await createReservation(query.get('user'),
-        headers.authorization, new Date(data.start), data.duration);
+        headers.authorization, new Date(data.start), data.duration, data.slot);
     if (response)
         return {
             body: response

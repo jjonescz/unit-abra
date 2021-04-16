@@ -1,15 +1,15 @@
 <script>
-	import { parkingsTotal, parkingsMin } from '$lib/db.js';
-	import { Button } from 'carbon-components-svelte';
-	import { ChevronLeftGlyph, ChevronRightGlyph } from 'carbon-icons-svelte';
-	import { onMount } from 'svelte';
+	import { getReservations } from '$lib/calendar';
+	import { parkingsMin, parkingsTotal } from '$lib/db.js';
 	import CalendarReservation from '$lib/ui/calendar/CalendarReservation.svelte';
 	import DeleteReservation from '$lib/ui/calendar/DeleteReservation.svelte';
 	import NewReservation from '$lib/ui/calendar/NewReservation.svelte';
-	import { getReservations } from '$lib/calendar';
-	import { getHours, getMinutes, parseISO } from 'date-fns';
+	import { Button } from 'carbon-components-svelte';
+	import { ChevronLeftGlyph, ChevronRightGlyph } from 'carbon-icons-svelte';
+	import { getHours, parseISO, setHours } from 'date-fns';
+	import { onMount } from 'svelte';
 
-	let date = new Date().toISOString();
+	let date = new Date();
 	let authorization = 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr';
 
 	// Display reservations.
@@ -93,7 +93,7 @@
 	on:addReservation={addReservation}
 	bind:open={newOpen}
 	slot={newslot}
-	start={newStart}
+	start={setHours(date, newStart)}
 />
 <DeleteReservation bind:open={delOpen} on:deleteReservation={deleteReservation} />
 
