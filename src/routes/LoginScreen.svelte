@@ -75,12 +75,14 @@
 				placeholder="Enter password..."
 			/>
 		</div>
-	</FluidForm>
 
-	<ButtonSet>
-		<Button kind="primary" on:click={login} style="margin-right: 0.5rem;">Log In</Button>
-		{#if in_progress}
-			<InlineLoading description="Logging in..." />
-		{/if}
-	</ButtonSet>
+		<ButtonSet>
+			<Button kind="primary" type="submit" on:click={login} style="margin-right: 0.5rem;"
+				>Log In</Button
+			>
+			{#if in_progress}
+				<InlineLoading description="Logging in..." />
+			{/if}
+		</ButtonSet>
+	</FluidForm>
 </Content>
