@@ -1,4 +1,5 @@
 <script>
+	import { session } from '$app/stores';
 	import Employee from '$lib/ui/Employee.svelte';
 	import {
 		Header,
@@ -12,7 +13,12 @@
 	} from 'carbon-components-svelte';
 	import LoginScreen from './LoginScreen.svelte';
 
-	let user;
+	let user = $session.user;
+
+	function logout() {
+		user = null;
+		document.cookie = 'user=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+	}
 </script>
 
 {#if !user}
@@ -27,7 +33,7 @@
 			<HeaderAction>
 				<HeaderPanelLinks>
 					<HeaderPanelDivider>{user.username}</HeaderPanelDivider>
-					<HeaderPanelLink on:click={() => (user = null)}>Log out</HeaderPanelLink>
+					<HeaderPanelLink on:click={logout}>Log out</HeaderPanelLink>
 				</HeaderPanelLinks>
 			</HeaderAction>
 		</HeaderUtilities>

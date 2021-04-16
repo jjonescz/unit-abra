@@ -29,6 +29,13 @@
 				...data
 			};
 			invalid_login = false;
+
+			// Save user as cookie.
+			const userJson = JSON.stringify({
+				username: username,
+				authorization: auth
+			});
+			document.cookie = `user=${userJson};path=/;max-age=${60 * 60 * 24 * 30};samesite=lax`;
 		} else {
 			invalid_login = true;
 		}
