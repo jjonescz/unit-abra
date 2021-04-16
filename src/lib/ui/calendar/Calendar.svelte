@@ -6,7 +6,16 @@
 	import NewReservation from '$lib/ui/calendar/NewReservation.svelte';
 	import { Button } from 'carbon-components-svelte';
 	import { ChevronLeftGlyph, ChevronRightGlyph } from 'carbon-icons-svelte';
-	import { format, getHours, parseISO, setHours, setMinutes, addDays, subDays } from 'date-fns';
+	import {
+		format,
+		getHours,
+		parseISO,
+		setHours,
+		setMinutes,
+		addDays,
+		subDays,
+		isBefore
+	} from 'date-fns';
 	import { browser } from '$app/env';
 
 	let date = new Date();
@@ -32,10 +41,13 @@
 	}
 
 	function displayReservation(r) {
+		const hour = isBefore(r.start, date) ? 0 : getHours(r.start);
+		console.log(hour);
+
 		const component = new CalendarReservation({
-			target: document.querySelector(`[data-id="${r.slot}-${getHours(r.start)}"`),
+			target: document.querySelector(`[data-id="${r.slot}-${hour}"`),
 			hydrate: true,
-			props: { r }
+			props: { r, date }
 		});
 		component.$on('clicked', function (e) {
 			delR = e.detail.r;

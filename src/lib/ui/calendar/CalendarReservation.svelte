@@ -1,9 +1,19 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
 	import { parkingsMin } from '$lib/db.js';
-	import { getHours, addMinutes, getMinutes, getDay } from 'date-fns';
+	import {
+		getHours,
+		addMinutes,
+		getMinutes,
+		getDay,
+		startOfDay,
+		endOfDay,
+		differenceInMinutes,
+		isBefore
+	} from 'date-fns';
 
 	export let r = {};
+	export let date;
 
 	const dispatchReservation = createEventDispatcher();
 	function clickReservation() {
@@ -21,17 +31,26 @@
 		'mediumslateblue'
 	];
 
-	$: left = (getMinutes(r.start) * 100) / 60;
+	$: end = addMinutes(r.start, r.duration);
+	$: left = isBefore(r.start, date) ? 0 : (getMinutes(r.start) * 100) / 60;
+	$: width =
+		getDay(r.start) === getDay(end)
+			? r.duration
+			: isBefore(r.start, date)
+			? -differenceInMinutes(startOfDay(date), end)
+			: -differenceInMinutes(r.start, endOfDay(date));
 	$: spreadBorders =
-		getDay(r.start) === getDay(addMinutes(r.start, r.duration))
-			? getHours(addMinutes(r.start, r.duration)) - getHours(r.start)
+		getDay(r.start) === getDay(end)
+			? getHours(end) - getHours(r.start)
+			: isBefore(r.start, date)
+			? getHours(end)
 			: 23 - getHours(r.start);
 </script>
 
 <button
-	style="width: calc({(r.duration * 100) / 60}% + {spreadBorders}px); background-color: {slotColors[
+	style="width: calc({(width * 100) / 60}% + {spreadBorders}px); background-color: {slotColors[
 		(r.slot - parkingsMin) % slotColors.length
-	]}; left: {left}%; max-width: calc({(24 - getHours(r.start)) * 100 - left}% + {spreadBorders}px)"
+	]}; left: {left}%;"
 	on:click={clickReservation}
 />
 
