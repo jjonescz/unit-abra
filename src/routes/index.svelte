@@ -7,7 +7,8 @@
 		HeaderPanelLinks,
 		HeaderUtilities,
 		SkipToContent,
-		Content
+		Content,
+		HeaderPanelDivider
 	} from 'carbon-components-svelte';
 	import LoginScreen from './LoginScreen.svelte';
 
@@ -25,7 +26,8 @@
 		<HeaderUtilities>
 			<HeaderAction>
 				<HeaderPanelLinks>
-					<HeaderPanelLink>Log out</HeaderPanelLink>
+					<HeaderPanelDivider>{user.username}</HeaderPanelDivider>
+					<HeaderPanelLink on:click={() => (user = null)}>Log out</HeaderPanelLink>
 				</HeaderPanelLinks>
 			</HeaderAction>
 		</HeaderUtilities>
