@@ -1,7 +1,8 @@
 <script>
-	import { Modal } from 'carbon-components-svelte';
-	import { createEventDispatcher } from 'svelte';
 	import { deleteReservation } from '$lib/calendar';
+	import { Modal } from 'carbon-components-svelte';
+	import { format } from 'date-fns';
+	import { createEventDispatcher } from 'svelte';
 
 	export let open = false;
 	export let r = {};
@@ -25,13 +26,15 @@
 <Modal
 	bind:open
 	danger
-	modalHeading="Reservation {r.start} - {r.start + r.duration}"
+	modalHeading="Delete reservation"
 	primaryButtonText="Delete"
 	secondaryButtonText="Cancel"
 	on:click:button--secondary={() => (open = false)}
-	on:open
+	on:open={() => {
+		r.start = format(r.start, 'yyyy-MM-dd H:mm');
+	}}
 	on:close
 	on:submit={removeReservation}
 >
-	<p>Reservation on parking slot {r.slot}</p>
+	<p>Reservation on parking slot {r.slot} on {r.start} for {r.duration} minutes.</p>
 </Modal>

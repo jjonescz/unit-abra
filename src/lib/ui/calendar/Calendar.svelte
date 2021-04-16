@@ -73,6 +73,11 @@
 	<Button kind="ghost" iconDescription="Next" icon={ChevronRightGlyph} />
 </div>
 
+<div style="margin-bottom: 1rem; margin-left: 1rem;">
+	<div>Click inside the calendar to create new reservation.</div>
+	<div>Click on reservation to delete it.</div>
+</div>
+
 <!-- Calendar. -->
 <table>
 	<tr>
