@@ -9,7 +9,7 @@
 		Tile,
 		TimePicker
 	} from 'carbon-components-svelte';
-	import { TrashCan16 } from 'carbon-icons-svelte';
+	import { TrashCan16, WatsonHealthRotate_36016 } from 'carbon-icons-svelte';
 	import { differenceInMinutes, format, parse, startOfDay } from 'date-fns';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
@@ -39,7 +39,7 @@
 	}
 
 	// Load reservations from server.
-	onMount(async () => {
+	async function loadReservations() {
 		const query = new URLSearchParams({
 			user: user.username
 		});
@@ -52,7 +52,8 @@
 			const data = await response.json();
 			reservations.set(data);
 		}
-	});
+	}
+	onMount(() => loadReservations());
 
 	async function createReservation() {
 		// Create new reservation on server.
@@ -135,6 +136,12 @@
 </Form>
 
 <h2>Your reservations</h2>
+<Button
+	kind="tertiary"
+	iconDescription="Refresh"
+	icon={WatsonHealthRotate_36016}
+	on:click={() => loadReservations()}
+/>
 
 {#each $reservations as r}
 	<Tile>
