@@ -6,20 +6,23 @@
 	import NewReservation from '$lib/ui/calendar/NewReservation.svelte';
 	import { Button } from 'carbon-components-svelte';
 	import { ChevronLeftGlyph, ChevronRightGlyph } from 'carbon-icons-svelte';
-	import { getHours, parseISO, setHours, setMinutes } from 'date-fns';
-	import { onMount } from 'svelte';
+	import { format, getHours, parseISO, setHours, setMinutes, addDays, subDays } from 'date-fns';
+	import { browser } from '$app/env';
 
 	let date = new Date();
 	let authorization = 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr';
 
 	// Display reservations.
-	onMount(async () => {
+	async function dayReservations(date) {
 		const data = await getReservations(authorization, date);
 		data.forEach((r) => {
 			r.start = parseISO(r.start);
 			displayReservation(r);
 		});
-	});
+	}
+	$: if (browser) {
+		dayReservations(date);
+	}
 
 	function displayReservation(r) {
 		new CalendarReservation({
@@ -65,9 +68,23 @@
 
 <!-- Date selection. -->
 <div class="date-navigation">
-	<Button kind="ghost" iconDescription="Prev" icon={ChevronLeftGlyph} />
-	<h6>Today</h6>
-	<Button kind="ghost" iconDescription="Next" icon={ChevronRightGlyph} />
+	<Button
+		kind="ghost"
+		iconDescription="Prev"
+		icon={ChevronLeftGlyph}
+		on:click={() => {
+			date = subDays(date, 1);
+		}}
+	/>
+	<h6>{format(date, 'yyyy-MM-dd')}</h6>
+	<Button
+		kind="ghost"
+		iconDescription="Next"
+		icon={ChevronRightGlyph}
+		on:click={() => {
+			date = addDays(date, 1);
+		}}
+	/>
 </div>
 
 <div style="margin-bottom: 1rem; margin-left: 1rem;">
