@@ -1,10 +1,14 @@
 <script>
-	import { Modal } from 'carbon-components-svelte';
-	let open = false; // Toggles modal visibility.
-	let valid = true; // Only valid reservations are displayed.
+	import { createEventDispatcher } from 'svelte';
 
 	export let r = { spot: 0, start: 0, duration: 0 };
 
+	const dispatchReservation = createEventDispatcher();
+	function clickReservation() {
+		dispatchReservation('clicked', {
+			r: r
+		});
+	}
 	const spotColors = [
 		'tomato',
 		'aquamarine',
@@ -14,35 +18,14 @@
 		'forestgreen',
 		'mediumslateblue'
 	];
-
-	function deleteReservation(e) {
-		// TODO: request delete via API.
-		e.stopPropagation();
-		valid = false;
-	}
 </script>
 
-{#if valid}
-	<button
-		style="width: calc({r.duration * 100}% + {r.duration - 1}px); background-color: {spotColors[
-			r.spot % spotColors.length
-		]};"
-		on:click={() => (open = true)}
-	/>
-	<Modal
-		bind:open
-		danger
-		modalHeading="Reservation {r.start} - {r.start + r.duration}"
-		primaryButtonText="Delete"
-		secondaryButtonText="Cancel"
-		on:click:button--secondary={() => (open = false)}
-		on:open
-		on:close
-		on:submit={deleteReservation}
-	>
-		<p />
-	</Modal>
-{/if}
+<button
+	style="width: calc({r.duration * 100}% + {r.duration - 1}px); background-color: {spotColors[
+		r.spot % spotColors.length
+	]};"
+	on:click={clickReservation}
+/>
 
 <style lang="scss">
 	button {
@@ -54,6 +37,7 @@
 		display: inline-block;
 		text-decoration: none;
 		border: 0;
+		z-index: 1; // Bring above `td` cells.
 
 		&:hover,
 		&:focus,

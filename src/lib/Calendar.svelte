@@ -4,6 +4,7 @@
 	import { ChevronLeftGlyph, ChevronRightGlyph } from 'carbon-icons-svelte';
 	import { onMount } from 'svelte';
 	import CalendarReservation from './CalendarReservation.svelte';
+	import DeleteReservation from './DeleteReservation.svelte';
 	import NewReservation from './NewReservation.svelte';
 
 	let dayReservations = [
@@ -35,6 +36,10 @@
 			target: document.querySelector(`[data-id="${r.spot}-${r.start}"`),
 			hydrate: true,
 			props: { r }
+		}).$on('clicked', function () {
+			newOpen = false; // Close if opened.
+			delOpen = true;
+			toDelete = this;
 		});
 	}
 
@@ -44,7 +49,7 @@
 	let newStart = false;
 
 	function createReservation(spot, start) {
-		newOpen = true;
+		newOpen = true && !delOpen; // We don't want to open both modals.
 		newSpot = spot;
 		newStart = start;
 	}
@@ -53,6 +58,16 @@
 	function addReservation(e) {
 		const r = e.detail.r;
 		displayReservation(r);
+	}
+
+	// Delete existing reservations.
+	let delOpen = false;
+	let toDelete = {};
+	function deleteReservation(e) {
+		if (e.detail.delete) {
+			toDelete.$destroy();
+		}
+		toDelete = {};
 	}
 </script>
 
@@ -90,6 +105,7 @@
 	spot={newSpot}
 	start={newStart}
 />
+<DeleteReservation bind:open={delOpen} on:deleteReservation={deleteReservation} />
 
 <style lang="scss">
 	table {
