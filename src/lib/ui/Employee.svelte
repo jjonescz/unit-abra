@@ -27,7 +27,7 @@
 	let timeInput = now.format('H:mm');
 	let durationInput = '1:00';
 
-	// Validation
+	// Parsing
 	$: date = dayjs(dateInput, 'YYYY-MM-DD', true);
 	$: time = dayjs(timeInput, ['HH:mm', 'H:mm'], true);
 	$: duration = dayjs(durationInput, ['HH:mm', 'H:mm'], true);
@@ -35,6 +35,9 @@
 	$: timeDur = toDuration(time);
 	$: durationDur = toDuration(duration);
 	$: fullDate = date.startOf('day').add(timeDur);
+
+	// Validation
+	$: durationTooLong = durationDur.asHours() > 8;
 
 	function toDuration(date) {
 		return dayjs.duration(date.diff(date.startOf('day')));
@@ -52,7 +55,13 @@
 		<DatePickerSkeleton />
 	{/if}
 	<TimePicker labelText="Time" bind:value={timeInput} pattern=".*" />
-	<TimePicker labelText="Duration" bind:value={durationInput} pattern=".*" />
+	<TimePicker
+		labelText="Duration"
+		bind:value={durationInput}
+		pattern=".*"
+		invalid={durationTooLong}
+		invalidText={durationTooLong ? 'You can reserve at most 8 hours.' : null}
+	/>
 	<p>
 		Selected time {timeDur.humanize()}, duration {durationDur.humanize()}. Date: {fullDate.format(
 			'YYYY-MM-DD HH:mm'
