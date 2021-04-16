@@ -8,7 +8,7 @@
 	export let r = {};
 	let startFormated = '';
 
-	let authorization = 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr';
+	export let authorization = '';
 
 	const dispatchReservation = createEventDispatcher();
 	async function removeReservation() {

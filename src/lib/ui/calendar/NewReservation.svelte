@@ -20,7 +20,7 @@
 	export let slot; // Selected parking slot.
 	export let startInput;
 
-	let authorization = 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr';
+	export let authorization = '';
 
 	const dispatchReservation = createEventDispatcher();
 	async function addReservation() {

@@ -19,18 +19,16 @@
 	import { browser } from '$app/env';
 
 	let date = new Date();
-	export let user = {};
+	export let user;
 
 	let reservations = {};
 
 	// Display reservations.
 	async function dayReservations(date) {
-		console.log(reservations);
 		for (const [_, r] of Object.entries(reservations)) {
 			r.$destroy();
 		}
 		const data = await getReservations(user.authorization, date);
-		console.log(data);
 		data.forEach((r) => {
 			r.start = parseISO(r.start);
 			displayReservation(r);
@@ -42,7 +40,6 @@
 
 	function displayReservation(r) {
 		const hour = isBefore(r.start, date) ? 0 : getHours(r.start);
-		console.log(hour);
 
 		const component = new CalendarReservation({
 			target: document.querySelector(`[data-id="${r.slot}-${hour}"`),
@@ -140,8 +137,14 @@
 	bind:open={newOpen}
 	slot={newslot}
 	startInput={setMinutes(setHours(date, newStart), 0)}
+	authorization={user.authorization}
 />
-<DeleteReservation bind:r={delR} bind:open={delOpen} on:deleteReservation={deleteReservation} />
+<DeleteReservation
+	bind:r={delR}
+	bind:open={delOpen}
+	on:deleteReservation={deleteReservation}
+	authorization={user.authorization}
+/>
 
 <style lang="scss">
 	table {
