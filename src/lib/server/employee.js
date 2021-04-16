@@ -1,4 +1,4 @@
-import { differenceInMinutes } from 'date-fns';
+import { add, differenceInMinutes, formatISO } from 'date-fns';
 import fetch from 'node-fetch';
 
 const endpoint = 'https://rezervace.flexibee.eu/v2/c/rezervace8';
@@ -24,4 +24,27 @@ export async function getReservations(userName, authorization) {
             slot: slot
         };
     });
+}
+
+export async function createReservation(userName, authorization, start, duration) {
+    const response = await fetch(`${endpoint}/udalost.json`, {
+        headers: {
+            'Authorization': authorization,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            winstrom: {
+                udalost: {
+                    typAkt: 'code:UDÁLOST',
+                    zodpPrac: `code:${userName}`,
+                    zahajeni: formatISO(start),
+                    dokonceni: formatISO(add(start, { minutes: duration })),
+                    zakazka: 'code:101', // TODO: Select parking slot.
+                    volno: false
+                }
+            }
+        })
+    });
+    const data = await response.json();
+    return !!data.winstrom.success;
 }
