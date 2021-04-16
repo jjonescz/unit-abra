@@ -16,6 +16,8 @@
 
 	const reservations = writable([]);
 
+	export let user;
+
 	const now = new Date();
 	const minDate = format(now, 'yyyy-MM-dd');
 
@@ -39,11 +41,11 @@
 	// Load reservations from server.
 	onMount(async () => {
 		const query = new URLSearchParams({
-			user: 'team8.uzivatel1'
+			user: user.username
 		});
 		const response = await fetch(`/employee/reservations.json?${query}`, {
 			headers: {
-				authorization: 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr'
+				authorization: user.authorization
 			}
 		});
 		if (response.ok) {
@@ -55,7 +57,7 @@
 	async function createReservation() {
 		// Create new reservation on server.
 		const query = new URLSearchParams({
-			user: 'team8.uzivatel1'
+			user: user.username
 		});
 		const reservation = {
 			start: dateTime,
@@ -64,7 +66,7 @@
 		const response = await fetch(`/employee/reservations.json?${query}`, {
 			method: 'PUT',
 			headers: {
-				authorization: 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr'
+				authorization: user.authorization
 			},
 			body: JSON.stringify(reservation)
 		});
@@ -86,12 +88,12 @@
 		// Delete reservation on server.
 		const query = new URLSearchParams({
 			id: id,
-			user: 'team8.uzivatel1'
+			user: user.username
 		});
 		const response = await fetch(`/employee/reservations.json?${query}`, {
 			method: 'DELETE',
 			headers: {
-				authorization: 'Basic dGVhbTgudXppdmF0ZWwxOnRlYW04LUpXdGFr'
+				authorization: user.authorization
 			}
 		});
 

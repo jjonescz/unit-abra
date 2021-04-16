@@ -12,5 +12,5 @@
 {#if !user}
 	<LoginScreen bind:user />
 {:else}
-	<Employee />
+	<Employee bind:user />
 {/if}
