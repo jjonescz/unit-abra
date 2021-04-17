@@ -99,7 +99,7 @@
 		reservations.update((r) => {
 			r.push({
 				...reservation,
-				...data
+				...data.success
 			});
 
 			// Sort by start date ascending.
