@@ -1,6 +1,7 @@
 import { FlexiApi } from './flexiApi.js';
 import { getFreeSlot } from './parkSlotSelection.js';
 
+/** Extensions of FLEXI API specific for employees. */
 export class EmployeeApi {
     constructor() {
         this.api = new FlexiApi();
