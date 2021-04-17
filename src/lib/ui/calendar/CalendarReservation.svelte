@@ -16,9 +16,15 @@
 
 	const dispatchReservation = createEventDispatcher();
 	function clickReservation() {
-		dispatchReservation('clicked', {
-			r: r
-		});
+		if (r.isManager) {
+			dispatchReservation('managerEmptySlotClicked', {
+				r: r
+			});
+		} else {
+			dispatchReservation('userEmptySlotClicked', {
+				r: r
+			});
+		}
 	}
 	const slotColors = ['var(--cds-interactive-01)', 'var(--cds-interactive-02)'];
 
@@ -41,13 +47,14 @@
 <button
 	style="width: calc({(width * 100) / 60}% + {spreadBorders}px); background-color: {r.isManager
 		? 'white'
-		: slotColors[r.slot % 2]}; left: {left}%; opacity: {r.isManager ? 1 : 0.5};"
+		: slotColors[r.slot % 2]}; left: {left}%; opacity: {r.isManager ? 1 : 0.5}; height: {r.isManager
+		? '100%'
+		: 'calc(100% + 1px)'};"
 	on:click={clickReservation}
 />
 
 <style lang="scss">
 	button {
-		height: calc(100% + 1px);
 		position: absolute;
 		top: 0;
 		display: inline-block;

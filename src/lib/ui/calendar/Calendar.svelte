@@ -47,10 +47,14 @@
 			hydrate: true,
 			props: { r, date }
 		});
-		component.$on('clicked', function (e) {
+		component.$on('userEmptySlotClicked', function (e) {
 			delR = e.detail.r;
 			newOpen = false; // Close if opened.
 			delOpen = true;
+			toDelete = this;
+		}).$on('managerEmptySlotClicked', function (e) {
+			delR = e.detail.r;
+			managerOpen = open;
 			toDelete = this;
 		});
 		reservations[r.id] = component;
