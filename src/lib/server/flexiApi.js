@@ -183,7 +183,7 @@ export class FlexiApi {
     }
 
     /** Gets code of logged in user. */
-    async getCode() {
+    async getEmployeeCode() {
         const query = new URLSearchParams({
             detail: 'custom:kod'
         });
@@ -195,13 +195,13 @@ export class FlexiApi {
         const data = await response.json();
         if (data.winstrom.success === "false")
             return { error: data };
-        return { success: { code: data.winstrom.uzivatel[0].kod } };
+        return { success: { kod: data.winstrom.uzivatel[0].kod } };
     }
 
     /** Obtains all parking slots and their type. */
     async getSlots() {
         const query = new URLSearchParams({
-            detail: 'custom:kod,typZakazky',
+            detail: 'custom:kod,typZakazky,zodpPrac',
             limit: 0
         });
         const response = await fetch(`${this.endpoint}/zakazka.json?${query}`, {
@@ -215,7 +215,8 @@ export class FlexiApi {
         const list = data.winstrom.zakazka.map(z => ({
             id: z.id,
             kod: z.kod,
-            typ: this.parseCode(z.typZakazky)
+            typ: this.parseCode(z.typZakazky),
+            zodpPrac: z.zodpPrac ? this.parseCode(z.zodpPrac) : ""
         }));
         return { success: list };
     }

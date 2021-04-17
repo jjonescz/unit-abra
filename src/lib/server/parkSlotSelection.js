@@ -5,7 +5,23 @@ function isManagerSlot(slot) {
 }
 
 // start: Date, duration: int(minutes)
-// TODO: Handle free and full manager slots
+export async function getManagerReleaseSlot(reservations, slot, start, duration) {
+    const end = add(start, { minutes: duration })
+    var resultSlot = slot
+
+    reservations.map(r => {
+        const rEnd = addMinutes(r.start, r.duration);
+        if (r.slot == slot && r.volno) {
+            // does reservation collide with given start and duration
+            if (r.start < end && rEnd > start)
+                resultSlot = -1
+        }
+    });
+
+    return resultSlot
+}
+
+// start: Date, duration: int(minutes)
 export async function getFreeSlot(reservations, start, duration) {
     const end = add(start, { minutes: duration })
 

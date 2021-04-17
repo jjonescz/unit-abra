@@ -1,5 +1,5 @@
 import { FlexiApi } from './flexiApi.js';
-import { getFreeSlot } from './parkSlotSelection.js';
+import { getFreeSlot, getManagerReleaseSlot } from './parkSlotSelection.js';
 
 /** Extensions of FLEXI API specific for employees. */
 export class EmployeeApi {
@@ -12,23 +12,37 @@ export class EmployeeApi {
         const list = await this.api.getReservations();
         if (!list.success) return list;
 
-        // Find free slot in them.
-        var freeSlot = await getFreeSlot(list.success, start, duration);
-        if (freeSlot === -1)
-            return { noFreeSlot: true };
-
         // Get user role.
         const role = await this.api.getRole();
         if (!role.success) return role;
         const isManager = role.success.role === 'MANAGER';
 
+        if (isManager) {
+            const employeeSlots = await this.api.getSlots();
+            if (!employeeSlots.success) return employeeSlots;
+            const loggedManagerCode = await this.api.getEmployeeCode();
+            if (!loggedManagerCode.success) return loggedManagerCode;
+
+            var managerSlot = 0
+            employeeSlots.success.map((x) => { if (x.zodpPrac === loggedManagerCode.success.kod) managerSlot = x.kod })
+
+            var slot = await getManagerReleaseSlot(list.success, managerSlot, start, duration);
+            if (slot === -1)
+                return { slotAlreadyFree: true };
+        } else {
+            // Find free slot in them.
+            var slot = await getFreeSlot(list.success, start, duration);
+            if (slot === -1)
+                return { noFreeSlot: true };
+        }
+
         const r = await this.api.createReservation(
-            this.api.username, start, duration, freeSlot, isManager);
+            this.api.username, start, duration, slot, isManager);
         if (!r.success) return r;
         return {
             success: {
                 ...r.success,
-                slot: freeSlot
+                slot: slot
             }
         };
     }
