@@ -24,14 +24,26 @@
 	let reservations = {};
 	let slots = $session.slots;
 
+	function error(r) {
+		alert(`Unexpected error: ${JSON.stringify(r)}`);
+	}
+
 	// Display reservations.
 	async function dayReservations(date) {
 		for (const [_, r] of Object.entries(reservations)) {
 			r.$destroy();
 		}
-		const data = await getReservations(user.authorization, date);
-		console.log(data);
-		data.forEach((r) => {
+		const r = await getReservations(user.authorization, date);
+		if (!r.ok) {
+			error(r);
+			return;
+		}
+		const data = await r.json();
+		if (!data.success) {
+			error(data);
+			return;
+		}
+		data.success.forEach((r) => {
 			r.start = parseISO(r.start);
 			displayReservation(r);
 		});
@@ -158,7 +170,7 @@
 				{:else}
 					<td
 						data-id="{s.kod}-{hour}"
-						data-typ="{s.typ}"
+						data-typ={s.typ}
 						on:click={() => createReservation(s.kod, hour, s.typ)}
 					/>
 				{/if}

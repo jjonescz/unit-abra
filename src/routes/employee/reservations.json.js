@@ -1,29 +1,26 @@
-import { createReservation, deleteReservation, getReservations } from '$lib/server/employee';
+import { EmployeeApi } from '$lib/server/employee';
 
 /** Gets upcoming reservations of user.
  * 
  * @type {import('@sveltejs/kit').RequestHandler}
  * */
-export async function get({ query, headers }) {
-    const list = await getReservations(query.get('user'), headers.authorization);
-    if (list)
-        return {
-            body: list
-        };
+export async function get({ headers }) {
+    const api = new EmployeeApi();
+    api.api.setAuth(headers.authorization);
+    const r = await api.api.getUserReservations();
+    return { body: r };
 }
 
 /** Creates new reservation for user.
  * 
  * @type {import('@sveltejs/kit').RequestHandler}
  * */
-export async function put({ query, headers, body }) {
+export async function put({ headers, body }) {
+    const api = new EmployeeApi();
+    api.api.setAuth(headers.authorization);
     const data = JSON.parse(body);
-    const response = await createReservation(query.get('user'),
-        headers.authorization, new Date(data.start), data.duration);
-    if (response)
-        return {
-            body: response
-        };
+    const r = await api.createReservation(new Date(data.start), data.duration);
+    return { body: r };
 }
 
 /** Deletes specified reservation of user.
@@ -31,7 +28,8 @@ export async function put({ query, headers, body }) {
  * @type {import('@sveltejs/kit').RequestHandler}
  * */
 export async function del({ query, headers }) {
-    const response = await deleteReservation(headers.authorization,
-        query.get('id'), query.get('manager') === 'true');
-    return { body: response };
+    const api = new EmployeeApi();
+    api.api.setAuth(headers.authorization);
+    const r = await api.deleteReservation(query.get('id'));
+    return { body: r };
 }

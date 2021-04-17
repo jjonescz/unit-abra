@@ -1,5 +1,5 @@
-import { formatISO } from "date-fns";
-import fetch from "node-fetch";
+import { formatISO } from 'date-fns';
+import fetch from 'node-fetch';
 
 const endpoint = 'https://rezervace.flexibee.eu/v2/c/rezervace8';
 const auth = 'Basic dGVhbTg6dGVhbTgtSld0YWs='; // user: team8
