@@ -29,7 +29,7 @@
 	const dispatchReservation = createEventDispatcher();
 	async function addReservation() {
 		// TODO: Exctract from API (zodpPrac).
-		if (typ === 'MANAGER') {
+		if (typ === 'MANAGEMENT') {
 			userInput = `manager${slot % 10}`;
 		}
 		const res = await createReservation(authorization, start, minutes, slot, userInput);
