@@ -1,4 +1,5 @@
 import { FlexiApi } from '$lib/server/flexiApi';
+import { ReceptionistApi } from '$lib/server/receptionist';
 
 /** Gets reservations on given day.
  *
@@ -16,8 +17,8 @@ export async function get({ query, headers }) {
  * @type {import('@sveltejs/kit').RequestHandler}
  * */
 export async function put({ headers, body }) {
-    const api = new FlexiApi();
-    api.setAuth(headers.authorization);
+    const api = new ReceptionistApi();
+    api.api.setAuth(headers.authorization);
     const data = JSON.parse(body);
     const r = await api.createReservation(data.user,
         new Date(data.start), data.duration, data.slot);

@@ -17,8 +17,13 @@ export class EmployeeApi {
         if (freeSlot === -1)
             return { noFreeSlot: true };
 
+        // Get user role.
+        const role = await this.api.getRole();
+        if (!role.success) return role;
+        const isManager = role.success.role === 'MANAGER';
+
         const r = await this.api.createReservation(
-            this.api.username, start, duration, freeSlot);
+            this.api.username, start, duration, freeSlot, isManager);
         if (!r.success) return r;
         return {
             success: {
@@ -32,7 +37,7 @@ export class EmployeeApi {
         // Determine whether user is manager.
         const role = await this.api.getRole();
         if (!role.success) return role;
-        const isManager = role.success.role !== 'MANAGER';
+        const isManager = role.success.role === 'MANAGER';
 
         if (!isManager) {
             // Find reservation.

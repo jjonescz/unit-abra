@@ -33,7 +33,8 @@ export class FlexiApi {
             id: data.id,
             start: start,
             duration: differenceInMinutes(end, start),
-            slot: slot
+            slot: slot,
+            isManager: !!data.volno
         };
     }
 
@@ -49,7 +50,7 @@ export class FlexiApi {
     async getUserReservations() {
         const userEncoded = encodeURIComponent(this.username);
         const query = new URLSearchParams({
-            detail: 'custom:zahajeni,dokonceni,zakazka',
+            detail: 'custom:zahajeni,dokonceni,zakazka,volno',
             order: 'zahajeni@A',
             limit: 0
         });
@@ -71,7 +72,7 @@ export class FlexiApi {
     async getReservation(id) {
         const encodedId = encodeURIComponent(id);
         const query = new URLSearchParams({
-            detail: 'custom:zahajeni,dokonceni,zakazka'
+            detail: 'custom:zahajeni,dokonceni,zakazka,volno'
         });
         const response = await fetch(`${this.endpoint}/udalost/${encodedId}.json?${query}`, {
             headers: this.authHeaders
@@ -88,7 +89,7 @@ export class FlexiApi {
     /** Obtains all reservations occurring on the specified `date` if specified. */
     async getReservations(date) {
         const query = new URLSearchParams({
-            detail: 'custom:zahajeni,dokonceni,zakazka,zodpPrac',
+            detail: 'custom:zahajeni,dokonceni,zakazka,zodpPrac,volno',
             limit: 0
         });
         let path;
@@ -122,7 +123,7 @@ export class FlexiApi {
     }
 
     /** Creates reservation for user at the specified slot. */
-    async createReservation(userName, start, duration, slot) {
+    async createReservation(userName, start, duration, slot, isManager) {
         const response = await fetch(`${this.endpoint}/udalost.json`, {
             method: 'PUT',
             headers: {
@@ -136,7 +137,8 @@ export class FlexiApi {
                         zodpPrac: `code:${userName}`,
                         zahajeni: formatISO(start),
                         dokonceni: formatISO(add(start, { minutes: duration })),
-                        zakazka: `code:${slot}`
+                        zakazka: `code:${slot}`,
+                        volno: isManager
                     }
                 }
             })
