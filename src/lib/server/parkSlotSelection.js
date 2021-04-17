@@ -1,5 +1,9 @@
 import { add, addMinutes } from 'date-fns';
 
+function isManagerSlot(slot) {
+    return slot <= 106
+}
+
 // start: Date, duration: int(minutes)
 // TODO: Handle free and full manager slots
 export async function getFreeSlot(reservations, start, duration) {
@@ -7,8 +11,10 @@ export async function getFreeSlot(reservations, start, duration) {
 
     var parkingSlots = {};
     for (let i = 101; i <= 120; i++) {
+        free = true
+        if (isManagerSlot(i)) free = false
         parkingSlots[i] = {
-            free: true,
+            free: free,
             // max Date value - 1
             nextReservation: new Date(8640000000000000 - 1),
             // min Date value + 1
@@ -16,19 +22,37 @@ export async function getFreeSlot(reservations, start, duration) {
         }
     }
 
-    reservations.map(r => {
-        const rEnd = addMinutes(r.start, r.duration);
+    reservations.sort(function (a, b) {
+        if (!a.volno && b.volno)
+            return 1
+        if (a.volno && !b.volno)
+            return -1
+        return a.start.getTime() - b.start.getTime()
+    })
 
+    console.log(reservations)
+
+    reservations.map(r => {
+        const rEnd = addMinutes(r.start, r.duration)
         var parkingSlot = parkingSlots[r.slot]
-        // does reservation collide with given start and duration
-        if (r.start < end && rEnd > start)
-            parkingSlot.free = false
-        // find earliest next reservation for parking slot
-        if (r.start >= end && r.start < parkingSlot.nextReservation)
-            parkingSlot.nextReservation = new Date(r.start.getTime())
-        // find latest prev reservation for parking slot
-        if (rEnd <= start && rEnd > parkingSlot.prevReservation) {
-            parkingSlot.prevReservation = new Date(rEnd.getTime())
+        if (isManagerSlot(r.slot) && r.volno) {
+            // is some of manager slots free
+            if (r.start <= start && rEnd >= end) {
+                parkingSlot.free = true
+                parkingSlot.prevReservation = r.start
+                parkingSlot.nextReservation = rEnd
+            }
+        } else {
+            // does reservation collide with given start and duration
+            if (r.start < end && rEnd > start)
+                parkingSlot.free = false
+            // find earliest next reservation for parking slot
+            if (r.start >= end && r.start < parkingSlot.nextReservation)
+                parkingSlot.nextReservation = r.start
+            // find latest prev reservation for parking slot
+            if (rEnd <= start && rEnd > parkingSlot.prevReservation) {
+                parkingSlot.prevReservation = rEnd
+            }
         }
     });
 
