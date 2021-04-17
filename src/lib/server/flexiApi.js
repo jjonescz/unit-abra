@@ -34,7 +34,7 @@ export class FlexiApi {
             start: start,
             duration: differenceInMinutes(end, start),
             slot: slot,
-            isManager: !!data.volno
+            volno: data.volno
         };
     }
 
