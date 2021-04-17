@@ -34,12 +34,7 @@
 	// Display reservations.
 	async function dayReservations(date) {
 		for (const [_, r] of Object.entries(reservations)) {
-			try {
-				r.$destroy();
-			} catch(err)
-			{
-				console.log(err)
-			}
+			r.$destroy();
 		}
 		const r = await getReservations(user.authorization, date);
 		if (!r.ok) {
@@ -65,8 +60,13 @@
 	function displayReservation(r) {
 		const hour = differenceInCalendarDays(r.start, date) === 1 ? 0 : getHours(r.start);
 
+		// We need to push the elements into extra div since
+		// there can be components anchored at same `td`.
+		const td = document.querySelector(`[data-id="${r.slot}-${hour}"]`);
+		const x = document.createElement('div');
+		td.appendChild(x);
 		const component = new CalendarReservation({
-			target: document.querySelector(`[data-id="${r.slot}-${hour}"`),
+			target: x,
 			hydrate: true,
 			props: { r, date }
 		});
@@ -127,7 +127,7 @@
 		else {
 			newR = clickedReservation;
 			newR.typ = 'ZAMESTNANEC';
-			newOpen = true && !delOpen;
+			newOpen = true;
 		}
 	}
 

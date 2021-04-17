@@ -31,7 +31,10 @@
 	const dispatchReservation = createEventDispatcher();
 	async function addReservation() {
 		// TODO: Exctract from API (zodpPrac).
-		const isManager = r.typ === 'MANAGEMENT';
+		console.log(r.typ);
+		console.log(userInput);
+
+		const isManager = r.typ !== 'ZAMESTNANEC';
 		if (isManager) {
 			userInput = `manager${r.slot % 10}`;
 		}
