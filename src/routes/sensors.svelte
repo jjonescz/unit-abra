@@ -10,8 +10,14 @@
 			return {};
 		}
 	}
+</script>
 
-	startChecking();
+<script>
+	import { prerendering } from '$app/env';
+
+	if (!prerendering) {
+		startChecking();
+	}
 </script>
 
 <h1>Sensor checking</h1>
