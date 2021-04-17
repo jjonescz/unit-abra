@@ -8,7 +8,12 @@ export class EmployeeApi {
     }
 
     async createReservation(start, duration) {
-        var freeSlot = await getFreeSlot(start, duration);
+        // Get all reservations.
+        const list = await this.api.getReservations();
+        if (!list.success) return list;
+
+        // Find free slot in them.
+        var freeSlot = await getFreeSlot(list.success, start, duration);
         if (freeSlot === -1)
             return { noFreeSlot: true };
 

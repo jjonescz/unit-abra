@@ -50,7 +50,8 @@ export class FlexiApi {
         const userEncoded = encodeURIComponent(this.username);
         const query = new URLSearchParams({
             detail: 'custom:zahajeni,dokonceni,zakazka',
-            order: 'zahajeni@A'
+            order: 'zahajeni@A',
+            limit: 0
         });
         const filter = `zodpPrac = "code:${userEncoded}" and dokonceni >= now()`;
         const response = await fetch(`${this.endpoint}/udalost/(${filter}).json?${query}`, {
@@ -84,15 +85,22 @@ export class FlexiApi {
         return { success: r };
     }
 
-    /** Obtains all reservations occurring on the specified `date`. */
+    /** Obtains all reservations occurring on the specified `date` if specified. */
     async getReservations(date) {
         const query = new URLSearchParams({
-            detail: 'custom:zahajeni,dokonceni,zakazka,zodpPrac'
+            detail: 'custom:zahajeni,dokonceni,zakazka,zodpPrac',
+            limit: 0
         });
-        const start = encodeURIComponent(formatISO(startOfDay(date)));
-        const end = encodeURIComponent(formatISO(endOfDay(date)));
-        const filter = `dokonceni >= "${start}" and zahajeni <= "${end}"`;
-        const response = await fetch(`${this.endpoint}/udalost/(${filter}).json?${query}`, {
+        let path;
+        if (date) {
+            const start = encodeURIComponent(formatISO(startOfDay(date)));
+            const end = encodeURIComponent(formatISO(endOfDay(date)));
+            const filter = `dokonceni >= "${start}" and zahajeni <= "${end}"`;
+            path = `udalost/(${filter}).json`;
+        } else {
+            path = 'udalost.json';
+        }
+        const response = await fetch(`${this.endpoint}/${path}?${query}`, {
             headers: this.authHeaders
         });
         if (!response.ok)
