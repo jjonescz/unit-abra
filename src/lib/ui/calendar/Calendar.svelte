@@ -207,7 +207,7 @@
 />
 <ManagerReservation
 	on:managerReservation={managerReservation}
-	open={manOpen}
+	bind:open={manOpen}
 />
 
 <style lang="scss">
