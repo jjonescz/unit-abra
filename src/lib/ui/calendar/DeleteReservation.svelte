@@ -16,7 +16,7 @@
 
 	const dispatchReservation = createEventDispatcher();
 	async function removeReservation() {
-		const x = await deleteReservation(authorization, r.id, r.isManager);
+		const x = await deleteReservation(authorization, r.id, r.volno);
 		if (!x.ok) {
 			error(x);
 		} else {

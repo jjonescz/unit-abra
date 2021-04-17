@@ -55,7 +55,7 @@
 				start: start,
 				duration: minutes,
 				username: userInput,
-				isManager: isManager
+				volno: isManager
 			}
 		});
 		open = false;

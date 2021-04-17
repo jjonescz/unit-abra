@@ -17,7 +17,7 @@
 
 	const dispatchReservation = createEventDispatcher();
 	function clickReservation() {
-		if (r.isManager) {
+		if (r.volno) {
 			dispatchReservation('managerEmptySlotClicked', {
 				r: r
 			});
@@ -48,9 +48,9 @@
 </script>
 
 <button
-	style="width: calc({(width * 100) / 60}% + {spreadBorders}px); background-color: {r.isManager
+	style="width: calc({(width * 100) / 60}% + {spreadBorders}px); background-color: {r.volno
 		? 'red'
-		: slotColors[r.slot % 2]}; left: {left}%; height: 100%; z-index: {r.isManager ? 1 : 2};"
+		: slotColors[r.slot % 2]}; left: {left}%; height: 100%; z-index: {r.volno ? 1 : 2};"
 	on:click|stopPropagation={clickReservation}
 	on:mouseenter={() => {
 		openTooltip = true;
