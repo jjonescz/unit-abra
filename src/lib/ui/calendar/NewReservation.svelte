@@ -16,7 +16,7 @@
 	import { createEventDispatcher } from 'svelte';
 
 	export let slots = [];
-	$: parkingsMin = slots[0].kod || 0;
+	$: parkingsMin = parseInt(slots[0].kod) || 0;
 	$: parkingsTotal = slots.length;
 
 	export let open; // Toggles modal visibility.
