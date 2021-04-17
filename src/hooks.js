@@ -1,4 +1,4 @@
-import { getSlots } from '$lib/server/slots';
+import { FlexiApi } from '$lib/server/flexiApi';
 import * as cookie from 'cookie/index.js';
 
 /** @type {import('@sveltejs/kit').GetContext} */
@@ -15,7 +15,11 @@ export async function getSession({ context }) {
     // Obtain all parking slots.
     let slots = [];
     if (context.user) {
-        slots = await getSlots(context.user.authorization);
+        const api = new FlexiApi();
+        api.setAuth(context.user.authorization);
+        const r = await api.getSlots();
+        if (r.success) slots = r.success;
+        else console.log('Could not obtain slots', r);
     }
 
     return {

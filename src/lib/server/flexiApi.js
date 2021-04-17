@@ -1,7 +1,7 @@
 import { add, differenceInMinutes, endOfDay, formatISO, startOfDay } from "date-fns";
 import fetch from 'node-fetch';
 
-/** Wrapper around FLEXI API for users, reservations and endpoints. */
+/** Wrapper around FLEXI API for users, reservations, sensors and slots. */
 export class FlexiApi {
     constructor() {
         this.endpoint = 'https://rezervace.flexibee.eu/v2/c/rezervace8';
@@ -178,5 +178,27 @@ export class FlexiApi {
             return { error: data };
         const role = this.parseCode(data.winstrom.uzivatel[0].role);
         return { success: { role: role } };
+    }
+
+    /** Obtains all parking slots and their type. */
+    async getSlots() {
+        const query = new URLSearchParams({
+            detail: 'custom:kod,typZakazky',
+            limit: 0
+        });
+        const response = await fetch(`${this.endpoint}/zakazka.json?${query}`, {
+            headers: this.authHeaders
+        });
+        if (!response.ok)
+            return { error: response };
+        const data = await response.json();
+        if (data.winstrom.success === "false")
+            return { error: data };
+        const list = data.winstrom.zakazka.map(z => ({
+            id: z.id,
+            kod: z.kod,
+            typ: this.parseCode(z.typZakazky)
+        }));
+        return { success: list };
     }
 }
