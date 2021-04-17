@@ -1,4 +1,3 @@
-import { FolderDetailsReference20 } from 'carbon-icons-svelte';
 import { add } from 'date-fns';
 import fetch from 'node-fetch';
 
