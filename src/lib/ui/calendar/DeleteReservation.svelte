@@ -10,16 +10,24 @@
 
 	export let authorization = '';
 
+	function error(r) {
+		alert(`Unexpected error: ${JSON.stringify(r)}`);
+	}
+
 	const dispatchReservation = createEventDispatcher();
 	async function removeReservation() {
-		let response = await deleteReservation(authorization, r.id, r.isManager);
-		console.log(response);
-		if (response.ok) {
-			dispatchReservation('deleteReservation', {
-				delete: await response.json()
-			});
+		const r = await deleteReservation(authorization, r.id, r.isManager);
+		if (!r.ok) {
+			error(r);
 		} else {
-			alert('Could not delete the reservation, try again.');
+			const data = await response.json();
+			if (!data.success) {
+				error(r);
+			} else {
+				dispatchReservation('deleteReservation', {
+					delete: data.success
+				});
+			}
 		}
 		open = false;
 	}

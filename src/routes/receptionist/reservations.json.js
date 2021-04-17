@@ -1,30 +1,27 @@
-import { createReservation, getReservations } from '$lib/server/receptionist';
-import { deleteReservation } from '$lib/server/employee';
+import { FlexiApi } from '$lib/server/flexiApi';
 
 /** Gets reservations on given day.
  *
  * @type {import('@sveltejs/kit').RequestHandler}
  * */
 export async function get({ query, headers }) {
-    const list = await getReservations(headers.authorization, new Date(query.get('date')));
-    if (list)
-        return {
-            body: list
-        };
+    const api = new FlexiApi();
+    api.setAuth(headers.authorization);
+    const r = await api.getReservations(new Date(query.get('date')));
+    return { body: r };
 }
 
 /** Creates new reservation.
  *
  * @type {import('@sveltejs/kit').RequestHandler}
  * */
-export async function put({ query, headers, body }) {
+export async function put({ headers, body }) {
+    const api = new FlexiApi();
+    api.setAuth(headers.authorization);
     const data = JSON.parse(body);
-    const response = await createReservation(query.get('user'),
-        headers.authorization, new Date(data.start), data.duration, data.slot);
-    if (response)
-        return {
-            body: response
-        };
+    const r = await api.createReservation(data.user,
+        new Date(data.start), data.duration, data.slot);
+    return { body: r };
 }
 
 /** Deletes specified reservation.
@@ -32,8 +29,8 @@ export async function put({ query, headers, body }) {
  * @type {import('@sveltejs/kit').RequestHandler}
  * */
 export async function del({ query, headers }) {
-    const response = await deleteReservation(headers.authorization,
-        query.get('id'), query.get('manager') === 'true');
-    if (response)
-        return { body: response };
+    const api = new FlexiApi();
+    api.setAuth(headers.authorization);
+    const r = await api.deleteReservation(query.get('id'));
+    return { body: r };
 }

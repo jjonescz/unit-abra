@@ -26,17 +26,26 @@
 
 	export let authorization = '';
 
+	function error(r) {
+		alert(`Unexpected error: ${JSON.stringify(r)}`);
+	}
+
 	const dispatchReservation = createEventDispatcher();
 	async function addReservation() {
-		const res = await createReservation(authorization, start, minutes, slot, userInput);
-		if (res !== false) {
-			dispatchReservation('addReservation', {
-				r: { id: res.id, slot: slot, start: start, duration: minutes }
-			});
-			open = false;
-		} else {
-			alert('Your reservation could not be created, please try again.');
+		const r = await createReservation(authorization, start, minutes, slot, userInput);
+		if (!r.ok) {
+			error(r);
+			return;
 		}
+		const data = await r.json();
+		if (!data.success) {
+			error(r);
+			return;
+		}
+		dispatchReservation('addReservation', {
+			r: { id: data.success.id, slot: slot, start: start, duration: minutes }
+		});
+		open = false;
 	}
 
 	const now = new Date();
