@@ -5,7 +5,7 @@ It was created as part of [UnIT hackathon 2021](https://unit.bestprague.cz/), sp
 
 ## Development
 
-To start developing, install [Node.js](https://nodejs.org/en/download/releases/) (version `12.x`) and run the following commands.
+To start developing, install [Node.js](https://nodejs.org/en/download/releases/) (tested on version `12.22.1`) and run the following commands.
 
 ```bash
 npm install
