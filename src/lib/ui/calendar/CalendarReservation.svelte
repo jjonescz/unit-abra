@@ -39,16 +39,15 @@
 </script>
 
 <button
-	style="width: calc({(width * 100) / 60}% + {spreadBorders}px); background-color: {slotColors[
-		r.slot % 2
-	]}; left: {left}%;"
+	style="width: calc({(width * 100) / 60}% + {spreadBorders}px); background-color: {r.isManager
+		? 'white'
+		: slotColors[r.slot % 2]}; left: {left}%; opacity: {r.isManager ? 1 : 0.5};"
 	on:click={clickReservation}
 />
 
 <style lang="scss">
 	button {
 		height: calc(100% + 1px);
-		opacity: 50%;
 		position: absolute;
 		top: 0;
 		display: inline-block;

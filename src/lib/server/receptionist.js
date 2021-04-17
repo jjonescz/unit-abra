@@ -5,7 +5,7 @@ const endpoint = 'https://rezervace.flexibee.eu/v2/c/rezervace8';
 
 export async function getReservations(authorization, date) {
     const query = new URLSearchParams({
-        detail: 'custom:zahajeni,dokonceni,zakazka'
+        detail: 'custom:zahajeni,dokonceni,zakazka,zodpPrac'
     });
     const start = encodeURIComponent(formatISO(startOfDay(date)));
     const end = encodeURIComponent(formatISO(endOfDay(date)));
@@ -19,11 +19,14 @@ export async function getReservations(authorization, date) {
         const start = new Date(u.zahajeni);
         const end = new Date(u.dokonceni);
         const slot = /code:(.*)/.exec(u.zakazka)[1];
+        const userName = /code:(.*)/.exec(u.zodpPrac)[1];
         return {
             id: u.id,
             start: start,
             duration: differenceInMinutes(end, start),
-            slot: slot
+            slot: slot,
+            userName: userName,
+            isManager: userName.startsWith('team8.manager')
         };
     });
 }

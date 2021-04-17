@@ -23,7 +23,6 @@
 
 	let reservations = {};
 	let slots = $session.slots;
-	$: console.log('Slots!!!', slots);
 
 	// Display reservations.
 	async function dayReservations(date) {
