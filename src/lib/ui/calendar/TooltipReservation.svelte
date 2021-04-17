@@ -9,6 +9,6 @@
 <Tooltip direction="top" align="center" triggerText="&nbsp;" bind:open hideIcon>
 	<p>
 		Reservation on parking slot {r.slot} on {format(r.start, 'yyyy-MM-dd H:mm')} for {r.duration} minutes
-		by {r.userName}.
+		by {r.username}.
 	</p></Tooltip
 >

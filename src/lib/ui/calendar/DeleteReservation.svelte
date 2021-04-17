@@ -50,6 +50,6 @@
 	on:submit={removeReservation}
 >
 	<p>
-		Reservation on parking slot {r.slot} on {startFormated} for {r.duration} minutes by {r.userName}.
+		Reservation on parking slot {r.slot} on {startFormated} for {r.duration} minutes by {r.username}.
 	</p>
 </Modal>
