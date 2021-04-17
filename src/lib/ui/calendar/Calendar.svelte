@@ -59,11 +59,11 @@
 
 	// Create new reservations.
 	let newOpen = false;
-	let newslot;
-	let newStart = 0;
+	let newTyp, newSlot, newStart;
 
-	function createReservation(slot, start) {
-		newslot = slot;
+	function createReservation(slot, start, typ) {
+		newTyp = typ;
+		newSlot = slot;
 		newStart = start;
 		newOpen = true && !delOpen; // We don't want to open both modals.
 	}
@@ -131,11 +131,13 @@
 					<td
 						style="background-color: var(--cds-ui-03);"
 						data-id="{s.kod}-{hour}"
+						data-typ="{s.typ}"
 					/>
 				{:else}
 					<td
 						data-id="{s.kod}-{hour}"
-						on:click={() => createReservation(s.kod, hour)}
+						data-typ="{s.typ}"
+						on:click={() => createReservation(s.kod, hour, s.typ)}
 					/>
 				{/if}
 			{/each}
@@ -146,7 +148,8 @@
 	on:addReservation={addReservation}
 	bind:open={newOpen}
 	{slots}
-	slot={newslot}
+	slot={newSlot}
+	typ={newTyp}
 	startInput={setMinutes(setHours(date, newStart), 0)}
 	authorization={user.authorization}
 />

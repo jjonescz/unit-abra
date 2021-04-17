@@ -21,6 +21,7 @@
 
 	export let open; // Toggles modal visibility.
 	export let slot; // Selected parking slot.
+	export let typ; // Whether we are freeing or booking the slot.
 	export let startInput;
 
 	export let authorization = '';
@@ -62,7 +63,7 @@
 
 <Modal
 	bind:open
-	modalHeading="New reservation"
+	modalHeading="New reservation - {typ === 'ZAMESTNANEC' ? 'booking' : 'freeing'}"
 	primaryButtonText="Confirm"
 	secondaryButtonText="Cancel"
 	on:click:button--secondary={() => (open = false)}
@@ -96,14 +97,13 @@
 			label="Parking slot"
 			invalidText={`Only ${parkingsMin} to ${parkingsMin + parkingsTotal}.`}
 		/>
-		<Select labelText="User" bind:value={userInput}>
-			{#each [...Array(6)] as _, i}
-				<SelectItem value={`manager${i + 1}`} text={`manager${i + 1}`} />
-			{/each}
-			{#each [...Array(32)] as _, i}
-				<SelectItem value={`uzivatel${i + 1}`} text={`manager${i + 1}`} />
-			{/each}
-			<SelectItem value="navsteva" text="navsteva" />
-		</Select>
+		{#if typ === 'ZAMESTNANEC'}
+			<Select labelText="User" bind:value={userInput}>
+				{#each [...Array(32)] as _, i}
+					<SelectItem value={`uzivatel${i + 1}`} text={`uzivatel${i + 1}`} />
+				{/each}
+				<SelectItem value="navsteva" text="navsteva" />
+			</Select>
+		{/if}
 	</Form>
 </Modal>
