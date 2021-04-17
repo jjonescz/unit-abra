@@ -16,16 +16,16 @@
 
 	const dispatchReservation = createEventDispatcher();
 	async function removeReservation() {
-		const r = await deleteReservation(authorization, r.id, r.isManager);
-		if (!r.ok) {
-			error(r);
+		const x = await deleteReservation(authorization, r.id, r.isManager);
+		if (!x.ok) {
+			error(x);
 		} else {
-			const data = await response.json();
+			const data = await x.json();
 			if (!data.success) {
-				error(r);
+				error(data);
 			} else {
 				dispatchReservation('deleteReservation', {
-					delete: data.success
+					delete: data
 				});
 			}
 		}
