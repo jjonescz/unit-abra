@@ -20,37 +20,35 @@
 	$: parkingsTotal = slots.length;
 
 	export let open; // Toggles modal visibility.
-	export let slot; // Selected parking slot.
-	export let typ = 'ZAMESTNANEC'; // Whether we are freeing or booking the slot.
-	export let startInput;
+	export let r = {};
 
 	export let authorization = '';
 
-	function error(r) {
-		alert(`Unexpected error: ${JSON.stringify(r)}`);
+	function error(err) {
+		alert(`Unexpected error: ${JSON.stringify(err)}`);
 	}
 
 	const dispatchReservation = createEventDispatcher();
 	async function addReservation() {
 		// TODO: Exctract from API (zodpPrac).
-		const isManager = typ === 'MANAGEMENT';
+		const isManager = r.typ === 'MANAGEMENT';
 		if (isManager) {
-			userInput = `manager${slot % 10}`;
+			userInput = `manager${r.slot % 10}`;
 		}
-		const r = await createReservation(authorization, start, minutes, slot, userInput);
-		if (!r.ok) {
-			error(r);
+		const x = await createReservation(authorization, start, minutes, r.slot, userInput);
+		if (!x.ok) {
+			error(x);
 			return;
 		}
-		const data = await r.json();
+		const data = await x.json();
 		if (!data.success) {
-			error(r);
+			error(x);
 			return;
 		}
 		dispatchReservation('addReservation', {
 			r: {
 				id: data.success.id,
-				slot: slot,
+				slot: r.slot,
 				start: start,
 				duration: minutes,
 				username: userInput,
@@ -84,13 +82,13 @@
 
 <Modal
 	bind:open
-	modalHeading="New reservation - {typ === 'ZAMESTNANEC' ? 'booking' : 'freeing'}"
+	modalHeading="New reservation - {r.typ === 'ZAMESTNANEC' ? 'booking' : 'freeing'}"
 	primaryButtonText="Confirm"
 	secondaryButtonText="Cancel"
 	on:click:button--secondary={() => (open = false)}
 	on:open={() => {
-		dateInput = format(startInput, 'yyyy-MM-dd');
-		timeInput = format(startInput, 'H:mm');
+		dateInput = format(r.start, 'yyyy-MM-dd');
+		timeInput = format(r.start, 'H:mm');
 	}}
 	on:close
 	on:submit={addReservation}
@@ -112,13 +110,13 @@
 			invalidText={durationTooLong ? 'You can reserve at most 8 hours.' : null}
 		/>
 		<NumberInput
-			bind:value={slot}
+			bind:value={r.slot}
 			min={parkingsMin}
 			max={parkingsMin + parkingsTotal}
 			label="Parking slot"
 			invalidText={`Only ${parkingsMin} to ${parkingsMin + parkingsTotal}.`}
 		/>
-		{#if typ === 'ZAMESTNANEC'}
+		{#if r.typ === 'ZAMESTNANEC'}
 			<Select labelText="User" bind:selected={userInput}>
 				{#each [...Array(32)] as _, i}
 					<SelectItem value={`uzivatel${i + 1}`} text={`uzivatel${i + 1}`} />

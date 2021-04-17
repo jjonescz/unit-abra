@@ -1,8 +1,11 @@
 <script>
 	import { getReservations } from '$lib/calendar';
+
 	import CalendarReservation from '$lib/ui/calendar/CalendarReservation.svelte';
 	import DeleteReservation from '$lib/ui/calendar/DeleteReservation.svelte';
 	import NewReservation from '$lib/ui/calendar/NewReservation.svelte';
+	import ManagerReservation from '$lib/ui/calendar/ManagerReservation.svelte';
+
 	import { Button, InlineNotification } from 'carbon-components-svelte';
 	import { ChevronLeftGlyph, ChevronRightGlyph } from 'carbon-icons-svelte';
 	import {
@@ -68,22 +71,18 @@
 		});
 		component.$on('managerEmptySlotClicked', function (e) {
 			clickedReservation = e.detail.r;
-			newSlot = clickedReservation.slot;
-			console.log(clickedReservation.start);
-			newStart = clickedReservation.start;
-			newOpen = true;
+			manOpen = true;
+			toDelete = this;
 		});
 		reservations[r.id] = component;
 	}
 
 	// Create new reservations.
 	let newOpen = false;
-	let newTyp, newSlot, newStart;
+	let newR;
 
 	function createReservation(slot, start, typ) {
-		newTyp = typ;
-		newSlot = slot;
-		newStart = start;
+		newR = { typ: typ, slot: slot, start: setMinutes(setHours(date, start), 0)};
 		newOpen = true && !delOpen; // We don't want to open both modals.
 	}
 
@@ -106,6 +105,22 @@
 			cannotDeleteFullSlot = true;
 		}
 		toDelete = {};
+	}
+
+	// Manager utils.
+	let manOpen = false;
+	function managerReservation(e) {
+		const action = e.detail.action;
+		console.log(action);
+		// Delete free space.
+		if (action == 0) {
+			delOpen = true;
+		}
+		// Register within allowed space.
+		else {
+			newR = clickedReservation;
+			newOpen = true && !delOpen;
+		}
 	}
 
 	// Errors.
@@ -182,9 +197,7 @@
 	on:addReservation={addReservation}
 	bind:open={newOpen}
 	{slots}
-	slot={newSlot}
-	typ={newTyp}
-	startInput={setMinutes(setHours(date, newStart), 0)}
+	r={newR}
 	authorization={user.authorization}
 />
 <DeleteReservation
@@ -192,6 +205,10 @@
 	bind:open={delOpen}
 	on:deleteReservation={deleteReservation}
 	authorization={user.authorization}
+/>
+<ManagerReservation
+	on:managerReservation={managerReservation}
+	open={manOpen}
 />
 
 <style lang="scss">
