@@ -22,3 +22,5 @@ Most importantly, all low-level API calls are wrapped in classes (`flexiApi.js`,
 
 Currently, BASIC HTTP authentication is used both in client-server and server-server communication.
 On client, the Base64-encoded authorization value is stored in cookies to persist sessions.
+
+This is implemented in `LoginScreen.svelte` and `hooks.js`.
