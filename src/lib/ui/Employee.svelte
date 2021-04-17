@@ -5,6 +5,7 @@
 		DatePicker,
 		DatePickerInput,
 		DatePickerSkeleton,
+		InlineNotification,
 		SkeletonPlaceholder,
 		Tile,
 		TimePicker
@@ -35,6 +36,9 @@
 
 	// Validation
 	$: durationTooLong = minutes > 8 * 60;
+
+	// Errors
+	let cannotDeleteFullSlot = false;
 
 	function totalMinutes(date) {
 		return differenceInMinutes(date, startOfDay(date));
@@ -97,7 +101,7 @@
 		// Delete reservation on server.
 		const query = new URLSearchParams({
 			id: id,
-			user: user.username
+			manager: isManager
 		});
 		const response = await fetch(`/employee/reservations.json?${query}`, {
 			method: 'DELETE',
@@ -108,13 +112,19 @@
 
 		// Update UI.
 		if (response.ok) {
-			reservations.update((r) => {
-				r.splice(
-					r.findIndex((x) => x.id === id),
-					1
-				);
-				return r;
-			});
+			const data = await response.json();
+			if (data.success) {
+				cannotDeleteFullSlot = false;
+				reservations.update((r) => {
+					r.splice(
+						r.findIndex((x) => x.id === id),
+						1
+					);
+					return r;
+				});
+			} else if (data.slotFull) {
+				cannotDeleteFullSlot = true;
+			}
 		}
 	}
 </script>
@@ -178,6 +188,14 @@
 		}}
 	/>
 </h2>
+
+{#if cannotDeleteFullSlot}
+	<InlineNotification
+		lowContrast
+		title="Cannot delete:"
+		subtitle="Cannot manipulate with occupied parking slot."
+	/>
+{/if}
 
 {#if $reservations == null}
 	<SkeletonPlaceholder style="width: 100%; height: 5rem;" />
