@@ -31,6 +31,7 @@ export async function put({ query, headers, body }) {
  * @type {import('@sveltejs/kit').RequestHandler}
  * */
 export async function del({ query, headers }) {
-    const response = await deleteReservation(headers.authorization, query.get('id'));
+    const response = await deleteReservation(headers.authorization,
+        query.get('id'), query.get('manager') === 'true');
     return { body: response };
 }

@@ -84,8 +84,8 @@ export async function createReservation(userName, authorization, start, duration
     return null;
 }
 
-export async function deleteReservation(authorization, id) {
-    if (await isSlotFull(await getSlotNumber(authorization, id))) {
+export async function deleteReservation(authorization, id, manager) {
+    if (!manager && await isSlotFull(await getSlotNumber(authorization, id))) {
         return { slotFull: true };
     }
 

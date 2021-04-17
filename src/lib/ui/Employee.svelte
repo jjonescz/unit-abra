@@ -101,7 +101,7 @@
 		// Delete reservation on server.
 		const query = new URLSearchParams({
 			id: id,
-			user: user.username
+			manager: isManager
 		});
 		const response = await fetch(`/employee/reservations.json?${query}`, {
 			method: 'DELETE',
