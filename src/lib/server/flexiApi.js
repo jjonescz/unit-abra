@@ -182,6 +182,22 @@ export class FlexiApi {
         return { success: { role: role } };
     }
 
+    /** Gets code of logged in user. */
+    async getCode() {
+        const query = new URLSearchParams({
+            detail: 'custom:kod'
+        });
+        const response = await fetch(`${this.endpoint}/uzivatel/(id=me()).json?${query}`, {
+            headers: this.authHeaders
+        });
+        if (!response.ok)
+            return { error: response };
+        const data = await response.json();
+        if (data.winstrom.success === "false")
+            return { error: data };
+        return { success: { code: data.winstrom.uzivatel[0].kod } };
+    }
+
     /** Obtains all parking slots and their type. */
     async getSlots() {
         const query = new URLSearchParams({
