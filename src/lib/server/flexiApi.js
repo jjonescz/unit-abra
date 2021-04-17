@@ -1,4 +1,5 @@
 import { add, differenceInMinutes, endOfDay, formatISO, startOfDay } from "date-fns";
+import fetch from 'node-fetch';
 
 /** Wrapper around FLEXI API for users, reservations and endpoints. */
 export class FlexiApi {
@@ -16,7 +17,7 @@ export class FlexiApi {
 
         // Extract username.
         const code = /Basic (.*)/i.exec(authorization)[1];
-        const decoded = atob(code);
+        const decoded = Buffer.from(code, 'base64').toString();
         this.username = decoded.split(':')[0];
     }
 
@@ -58,7 +59,7 @@ export class FlexiApi {
         if (!response.ok)
             return { error: response };
         const data = await response.json();
-        if (!data.winstrom.success)
+        if (data.winstrom.success === "false")
             return { error: data };
         const list = data.winstrom.udalost.map(u => this.parseReservation(u));
         return { success: list };
@@ -77,7 +78,7 @@ export class FlexiApi {
         if (!response.ok)
             return { error: response };
         const data = await response.json();
-        if (!data.winstrom.success)
+        if (data.winstrom.success === "false")
             return { error: data };
         const r = this.parseReservation(data.winstrom.udalost[0]);
         return { success: r };
@@ -97,7 +98,7 @@ export class FlexiApi {
         if (!response.ok)
             return { error: response };
         const data = await response.json();
-        if (!data.winstrom.success)
+        if (data.winstrom.success === "false")
             return { error: data };
         const list = data.winstrom.udalost.map(u => this.parseReservationWithUsername(u));
         return { success: list };
@@ -135,7 +136,7 @@ export class FlexiApi {
         if (!response.ok)
             return { error: response };
         const data = await response.json();
-        if (!data.winstrom.success)
+        if (data.winstrom.success === "false")
             return { error: data };
         return {
             success: { id: data.winstrom.results[0].id }
@@ -165,7 +166,7 @@ export class FlexiApi {
         if (!response.ok)
             return { error: response };
         const data = await response.json();
-        if (!data.winstrom.success)
+        if (data.winstrom.success === "false")
             return { error: data };
         const role = this.parseCode(data.winstrom.uzivatel[0].role);
         return { success: { role: role } };
