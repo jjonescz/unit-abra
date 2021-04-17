@@ -58,7 +58,7 @@
 	}
 
 	function displayReservation(r) {
-		const hour = differenceInCalendarDays(r.start, date) === 1 ? 0 : getHours(r.start);
+		const hour = differenceInCalendarDays(r.start, date) === 0 ? getHours(r.start) : 0;
 
 		// We need to push the elements into extra div since
 		// there can be components anchored at same `td`.

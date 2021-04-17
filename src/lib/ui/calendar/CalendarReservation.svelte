@@ -30,17 +30,17 @@
 	const slotColors = ['var(--cds-interactive-01)', 'var(--cds-interactive-02)'];
 
 	$: end = addMinutes(r.start, r.duration);
-	$: left = differenceInCalendarDays(r.start, date) === 1 ? 0 : (getMinutes(r.start) * 100) / 60;
+	$: left = differenceInCalendarDays(r.start, date) !== 0 ? 0 : (getMinutes(r.start) * 100) / 60;
 	$: width =
 		getDay(r.start) === getDay(end)
 			? r.duration
-			: differenceInCalendarDays(r.start, date) === 1
+			: differenceInCalendarDays(r.start, date) !== 0
 			? -differenceInMinutes(startOfDay(date), end)
 			: -differenceInMinutes(r.start, endOfDay(date));
 	$: spreadBorders =
 		getDay(r.start) === getDay(end)
 			? getHours(end) - getHours(r.start)
-			: differenceInCalendarDays(r.start, date) === 1
+			: differenceInCalendarDays(r.start, date) !== 0
 			? getHours(end)
 			: 23 - getHours(r.start);
 
