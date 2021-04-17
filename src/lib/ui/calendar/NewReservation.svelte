@@ -21,7 +21,7 @@
 
 	export let open; // Toggles modal visibility.
 	export let slot; // Selected parking slot.
-	export let typ; // Whether we are freeing or booking the slot.
+	export let typ = 'ZAMESTNANEC'; // Whether we are freeing or booking the slot.
 	export let startInput;
 
 	export let authorization = '';

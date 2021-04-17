@@ -49,7 +49,6 @@
 			props: { r, date }
 		});
 		component.$on('userFullSlotClicked', function (e) {
-			console.log('delte');
 			clickedReservation = e.detail.r;
 			newOpen = false; // Close if opened.
 			delOpen = true;
@@ -57,10 +56,10 @@
 		});
 		component.$on('managerEmptySlotClicked', function (e) {
 			clickedReservation = e.detail.r;
-			clickedReservation.isManager = false;
-			clickedReservation.typ = 'ZAMESTNANEC';
+			newSlot = clickedReservation.slot;
+			console.log(clickedReservation.start);
+			newStart = clickedReservation.start;
 			newOpen = true;
-			console.log(clickedReservation);
 		});
 		reservations[r.id] = component;
 	}
