@@ -8,9 +8,7 @@ export class ReceptionistApi {
 
     async createReservation(userName, start, duration, slot) {
         // Get user role.
-        const role = await this.api.getRole();
-        if (!role.success) return role;
-        const isManager = role.success.role === 'MANAGER';
+        const isManager = /manager/.test(userName);
 
         return await this.api.createReservation(
             userName, start, duration, slot, isManager);

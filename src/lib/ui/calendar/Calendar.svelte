@@ -34,7 +34,12 @@
 	// Display reservations.
 	async function dayReservations(date) {
 		for (const [_, r] of Object.entries(reservations)) {
-			r.$destroy();
+			try {
+				r.$destroy();
+			} catch(err)
+			{
+				console.log(err)
+			}
 		}
 		const r = await getReservations(user.authorization, date);
 		if (!r.ok) {
@@ -42,6 +47,8 @@
 			return;
 		}
 		const data = await r.json();
+		console.log(data);
+
 		if (!data.success) {
 			error(data);
 			return;
@@ -119,6 +126,7 @@
 		// Register within allowed space.
 		else {
 			newR = clickedReservation;
+			newR.typ = 'ZAMESTNANEC';
 			newOpen = true && !delOpen;
 		}
 	}
@@ -151,7 +159,7 @@
 <div style="margin-bottom: 1rem; margin-left: 1rem;">
 	<div>Click inside the calendar to create new reservation.</div>
 	<div>Click on reservation to delete it.</div>
-	<div>Management slots are automatically taken when grey.</div>
+	<div>Management slots are red.</div>
 </div>
 
 {#if cannotDeleteFullSlot}
@@ -172,23 +180,14 @@
 	</tr>
 	{#each slots as s}
 		<tr>
-			<th scope="row">{s.kod}</th>
+			<th scope="row" style="color: {s.typ === 'MANAGEMENT' ? 'var(--cds-danger-01)' : 'black'};">{s.kod}</th>
 			{#each [...Array(24)] as _, hour}
 				<!-- Mark table cells for positioning of reservations. -->
-				{#if s.typ === 'MANAGEMENT'}
-					<td
-						style="background-color: var(--cds-ui-03);"
-						data-id="{s.kod}-{hour}"
-						data-typ="{s.typ}"
-						on:click={() => createReservation(s.kod, hour, s.typ)}
-					/>
-				{:else}
-					<td
+				<td
 						data-id="{s.kod}-{hour}"
 						data-typ={s.typ}
 						on:click={() => createReservation(s.kod, hour, s.typ)}
 					/>
-				{/if}
 			{/each}
 		</tr>
 	{/each}

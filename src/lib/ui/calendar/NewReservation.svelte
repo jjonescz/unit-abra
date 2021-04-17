@@ -65,7 +65,7 @@
 	let dateInput;
 	let timeInput;
 	let durationInput = '1:00';
-	let userInput = 'navsteva';
+	let userInput = 'uzivatel1';
 
 	// Parsing
 	$: date = parse(dateInput, 'yyyy-MM-dd', now);

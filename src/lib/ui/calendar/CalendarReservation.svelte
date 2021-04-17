@@ -47,41 +47,28 @@
 	let openTooltip = false;
 </script>
 
-{#if r.isManager}
-	<button
-		style="width: calc({(width * 100) /
-			60}% + {spreadBorders}px); background-color: white; left: {left}%; opacity: 1; height: 100%; z-index: 1;"
-		on:click|stopPropagation={clickReservation}
-		on:mouseenter={() => {
-			openTooltip = true;
-		}}
-		on:mouseleave={() => {
-			openTooltip = false;
-		}}><TooltipReservation {r} open={openTooltip} /></button
-	>
-{:else}
-	<!-- Notice the z-index puts these above "freeing manager reservations". -->
-	<button
-		style="width: calc({(width * 100) / 60}% + {spreadBorders}px); background-color: {slotColors[
-			r.slot % 2
-		]}; left: {left}%; opacity: 0.5; height: calc(100% + 1px); z-index: 2;"
-		on:click|stopPropagation={clickReservation}
-		on:mouseenter={() => {
-			openTooltip = true;
-		}}
-		on:mouseleave={() => {
-			openTooltip = false;
-		}}><TooltipReservation {r} open={openTooltip} /></button
-	>
-{/if}
+<button
+	style="width: calc({(width * 100) / 60}% + {spreadBorders}px); background-color: {r.isManager
+		? 'red'
+		: slotColors[r.slot % 2]}; left: {left}%; height: 100%; z-index: {r.isManager ? 1 : 2};"
+	on:click|stopPropagation={clickReservation}
+	on:mouseenter={() => {
+		openTooltip = true;
+	}}
+	on:mouseleave={() => {
+		openTooltip = false;
+	}}><TooltipReservation {r} open={openTooltip} /></button
+>
 
 <style lang="scss">
 	button {
+		height: calc(100% + 1px);
 		position: absolute;
 		top: 0;
 		display: inline-block;
 		text-decoration: none;
 		border: 0;
+		opacity: 0.5;
 
 		&:hover,
 		&:focus,
