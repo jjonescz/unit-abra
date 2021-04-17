@@ -47,7 +47,7 @@
 			return;
 		}
 		dispatchReservation('addReservation', {
-			r: { id: data.success.id, slot: slot, start: start, duration: minutes }
+			r: { id: data.success.id, slot: slot, start: start, duration: minutes, username: userInput }
 		});
 		open = false;
 	}
