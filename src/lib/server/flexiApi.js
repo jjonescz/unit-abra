@@ -113,7 +113,7 @@ export class FlexiApi {
     }
 
     /** Creates reservation for user at the specified slot. */
-    async createReservation(userName, start, duration, slot, volno) {
+    async createReservation(userName, start, duration, slot) {
         const response = await fetch(`${this.endpoint}/udalost.json`, {
             method: 'PUT',
             headers: {
@@ -127,8 +127,7 @@ export class FlexiApi {
                         zodpPrac: `code:${userName}`,
                         zahajeni: formatISO(start),
                         dokonceni: formatISO(add(start, { minutes: duration })),
-                        zakazka: `code:${slot}`,
-                        volno: volno
+                        zakazka: `code:${slot}`
                     }
                 }
             })
