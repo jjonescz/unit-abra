@@ -13,7 +13,7 @@
 		setMinutes,
 		addDays,
 		subDays,
-		isBefore
+		differenceInCalendarDays
 	} from 'date-fns';
 	import { browser } from '$app/env';
 	import { session } from '$app/stores';
@@ -30,6 +30,7 @@
 			r.$destroy();
 		}
 		const data = await getReservations(user.authorization, date);
+		console.log(data);
 		data.forEach((r) => {
 			r.start = parseISO(r.start);
 			displayReservation(r);
@@ -40,22 +41,26 @@
 	}
 
 	function displayReservation(r) {
-		const hour = isBefore(r.start, date) ? 0 : getHours(r.start);
+		const hour = differenceInCalendarDays(r.start, date) === 1 ? 0 : getHours(r.start);
 
 		const component = new CalendarReservation({
 			target: document.querySelector(`[data-id="${r.slot}-${hour}"`),
 			hydrate: true,
 			props: { r, date }
 		});
-		component.$on('userEmptySlotClicked', function (e) {
-			delR = e.detail.r;
+		component.$on('userFullSlotClicked', function (e) {
+			console.log('delte');
+			clickedReservation = e.detail.r;
 			newOpen = false; // Close if opened.
 			delOpen = true;
 			toDelete = this;
-		}).$on('managerEmptySlotClicked', function (e) {
-			delR = e.detail.r;
-			managerOpen = open;
-			toDelete = this;
+		});
+		component.$on('managerEmptySlotClicked', function (e) {
+			clickedReservation = e.detail.r;
+			clickedReservation.isManager = false;
+			clickedReservation.typ = 'ZAMESTNANEC';
+			newOpen = true;
+			console.log(clickedReservation);
 		});
 		reservations[r.id] = component;
 	}
@@ -79,13 +84,13 @@
 
 	// Delete existing reservations.
 	let delOpen = false;
-	let delR = {};
+	let clickedReservation = {};
 	let toDelete = {};
 	function deleteReservation(e) {
 		if (e.detail.delete.success) {
 			cannotDeleteFullSlot = false;
 			toDelete.$destroy();
-			delete reservations[delR.id];
+			delete reservations[clickedReservation.id];
 		} else if (e.detail.delete.slotFull) {
 			cannotDeleteFullSlot = true;
 		}
@@ -149,6 +154,7 @@
 						style="background-color: var(--cds-ui-03);"
 						data-id="{s.kod}-{hour}"
 						data-typ="{s.typ}"
+						on:click={() => createReservation(s.kod, hour, s.typ)}
 					/>
 				{:else}
 					<td
@@ -171,7 +177,7 @@
 	authorization={user.authorization}
 />
 <DeleteReservation
-	bind:r={delR}
+	bind:r={clickedReservation}
 	bind:open={delOpen}
 	on:deleteReservation={deleteReservation}
 	authorization={user.authorization}

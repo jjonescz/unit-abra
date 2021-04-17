@@ -1,5 +1,6 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
+	import TooltipReservation from '$lib/ui/calendar/TooltipReservation.svelte';
 	import {
 		getHours,
 		addMinutes,
@@ -8,7 +9,7 @@
 		startOfDay,
 		endOfDay,
 		differenceInMinutes,
-		isBefore
+		differenceInCalendarDays
 	} from 'date-fns';
 
 	export let r = {};
@@ -21,7 +22,7 @@
 				r: r
 			});
 		} else {
-			dispatchReservation('userEmptySlotClicked', {
+			dispatchReservation('userFullSlotClicked', {
 				r: r
 			});
 		}
@@ -29,29 +30,50 @@
 	const slotColors = ['var(--cds-interactive-01)', 'var(--cds-interactive-02)'];
 
 	$: end = addMinutes(r.start, r.duration);
-	$: left = isBefore(r.start, date) ? 0 : (getMinutes(r.start) * 100) / 60;
+	$: left = differenceInCalendarDays(r.start, date) === 1 ? 0 : (getMinutes(r.start) * 100) / 60;
 	$: width =
 		getDay(r.start) === getDay(end)
 			? r.duration
-			: isBefore(r.start, date)
+			: differenceInCalendarDays(r.start, date) === 1
 			? -differenceInMinutes(startOfDay(date), end)
 			: -differenceInMinutes(r.start, endOfDay(date));
 	$: spreadBorders =
 		getDay(r.start) === getDay(end)
 			? getHours(end) - getHours(r.start)
-			: isBefore(r.start, date)
+			: differenceInCalendarDays(r.start, date) === 1
 			? getHours(end)
 			: 23 - getHours(r.start);
+
+	let openTooltip = false;
 </script>
 
-<button
-	style="width: calc({(width * 100) / 60}% + {spreadBorders}px); background-color: {r.isManager
-		? 'white'
-		: slotColors[r.slot % 2]}; left: {left}%; opacity: {r.isManager ? 1 : 0.5}; height: {r.isManager
-		? '100%'
-		: 'calc(100% + 1px)'};"
-	on:click={clickReservation}
-/>
+{#if r.isManager}
+	<button
+		style="width: calc({(width * 100) /
+			60}% + {spreadBorders}px); background-color: white; left: {left}%; opacity: 1; height: 100%; z-index: 1;"
+		on:click|stopPropagation={clickReservation}
+		on:mouseenter={() => {
+			openTooltip = true;
+		}}
+		on:mouseleave={() => {
+			openTooltip = false;
+		}}><TooltipReservation {r} open={openTooltip} /></button
+	>
+{:else}
+	<!-- Notice the z-index puts these above "freeing manager reservations". -->
+	<button
+		style="width: calc({(width * 100) / 60}% + {spreadBorders}px); background-color: {slotColors[
+			r.slot % 2
+		]}; left: {left}%; opacity: 0.5; height: calc(100% + 1px); z-index: 2;"
+		on:click|stopPropagation={clickReservation}
+		on:mouseenter={() => {
+			openTooltip = true;
+		}}
+		on:mouseleave={() => {
+			openTooltip = false;
+		}}><TooltipReservation {r} open={openTooltip} /></button
+	>
+{/if}
 
 <style lang="scss">
 	button {
@@ -60,7 +82,6 @@
 		display: inline-block;
 		text-decoration: none;
 		border: 0;
-		z-index: 1; // Bring above `td` cells.
 
 		&:hover,
 		&:focus,

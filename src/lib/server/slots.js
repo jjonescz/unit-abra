@@ -19,7 +19,7 @@ export async function getSlots(authorization) {
             const typ = /code:(.*)/.exec(z.typZakazky)[1];
             return {
                 id: z.id,
-                kod: z.kod,
+                kod: parseInt(z.kod),
                 typ: typ
             };
         });

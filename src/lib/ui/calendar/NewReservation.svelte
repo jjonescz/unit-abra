@@ -16,7 +16,7 @@
 	import { createEventDispatcher } from 'svelte';
 
 	export let slots = [];
-	$: parkingsMin = parseInt(slots[0].kod) || 0;
+	$: parkingsMin = slots[0].kod || 0;
 	$: parkingsTotal = slots.length;
 
 	export let open; // Toggles modal visibility.
@@ -28,6 +28,10 @@
 
 	const dispatchReservation = createEventDispatcher();
 	async function addReservation() {
+		// TODO: Exctract from API (zodpPrac).
+		if (typ === 'MANAGER') {
+			userInput = `manager${slot % 10}`;
+		}
 		const res = await createReservation(authorization, start, minutes, slot, userInput);
 		if (res !== false) {
 			dispatchReservation('addReservation', {
@@ -103,6 +107,7 @@
 					<SelectItem value={`uzivatel${i + 1}`} text={`uzivatel${i + 1}`} />
 				{/each}
 				<SelectItem value="navsteva" text="navsteva" />
+				<SelectItem value="Recepcni" text="recepcni" />
 			</Select>
 		{/if}
 	</Form>

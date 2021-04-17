@@ -13,7 +13,6 @@
 	const dispatchReservation = createEventDispatcher();
 	async function removeReservation() {
 		let response = await deleteReservation(authorization, r.id, r.isManager);
-		console.log(response);
 		if (response.ok) {
 			dispatchReservation('deleteReservation', {
 				delete: await response.json()
@@ -41,5 +40,7 @@
 	on:close
 	on:submit={removeReservation}
 >
-	<p>Reservation on parking slot {r.slot} on {startFormated} for {r.duration} minutes.</p>
+	<p>
+		Reservation on parking slot {r.slot} on {startFormated} for {r.duration} minutes by {r.userName}.
+	</p>
 </Modal>
