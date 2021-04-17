@@ -44,35 +44,41 @@
 		return differenceInMinutes(date, startOfDay(date));
 	}
 
+	function error(r) {
+		alert(`Unexpected error: ${JSON.stringify(r)}`);
+	}
+
 	async function loadReservations() {
 		// Load reservations from server.
-		const query = new URLSearchParams({
-			user: user.username
-		});
-		const response = await fetch(`/employee/reservations.json?${query}`, {
+		const response = await fetch(`/employee/reservations.json`, {
 			headers: {
 				authorization: user.authorization
 			}
 		});
 
 		// Update UI.
-		if (response.ok) {
-			const data = await response.json();
-			reservations.set(data);
+		if (!response.ok) {
+			reservations.set([]);
+			error(response);
+			return;
 		}
+		const data = await response.json();
+		if (!data.success) {
+			reservations.set([]);
+			error(data);
+			return;
+		}
+		reservations.set(data.success);
 	}
 	onMount(() => loadReservations());
 
 	async function createReservation() {
 		// Create new reservation on server.
-		const query = new URLSearchParams({
-			user: user.username
-		});
 		const reservation = {
 			start: dateTime,
 			duration: minutes
 		};
-		const response = await fetch(`/employee/reservations.json?${query}`, {
+		const response = await fetch(`/employee/reservations.json`, {
 			method: 'PUT',
 			headers: {
 				authorization: user.authorization
@@ -81,27 +87,32 @@
 		});
 
 		// Update UI.
-		if (response.ok) {
-			const data = await response.json();
-			reservations.update((r) => {
-				r.push({
-					...reservation,
-					...data
-				});
-
-				// Sort by start date ascending.
-				r.sort((a, b) => differenceInMinutes(new Date(a.start), new Date(b.start)));
-
-				return r;
-			});
+		if (!response.ok) {
+			error(response);
+			return;
 		}
+		const data = await response.json();
+		if (!data.success) {
+			error(data);
+			return;
+		}
+		reservations.update((r) => {
+			r.push({
+				...reservation,
+				...data
+			});
+
+			// Sort by start date ascending.
+			r.sort((a, b) => differenceInMinutes(new Date(a.start), new Date(b.start)));
+
+			return r;
+		});
 	}
 
 	async function deleteReservation(id) {
 		// Delete reservation on server.
 		const query = new URLSearchParams({
-			id: id,
-			manager: isManager
+			id: id
 		});
 		const response = await fetch(`/employee/reservations.json?${query}`, {
 			method: 'DELETE',
@@ -111,21 +122,27 @@
 		});
 
 		// Update UI.
-		if (response.ok) {
-			const data = await response.json();
-			if (data.success) {
-				cannotDeleteFullSlot = false;
-				reservations.update((r) => {
-					r.splice(
-						r.findIndex((x) => x.id === id),
-						1
-					);
-					return r;
-				});
-			} else if (data.slotFull) {
-				cannotDeleteFullSlot = true;
-			}
+		if (!response.ok) {
+			error(response);
+			return;
 		}
+		const data = await response.json();
+		if (data.slotFull) {
+			cannotDeleteFullSlot = true;
+			return;
+		}
+		if (!data.success) {
+			error(data);
+			return;
+		}
+		cannotDeleteFullSlot = false;
+		reservations.update((r) => {
+			r.splice(
+				r.findIndex((x) => x.id === id),
+				1
+			);
+			return r;
+		});
 	}
 </script>
 
