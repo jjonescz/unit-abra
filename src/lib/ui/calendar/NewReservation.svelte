@@ -33,7 +33,8 @@
 	const dispatchReservation = createEventDispatcher();
 	async function addReservation() {
 		// TODO: Exctract from API (zodpPrac).
-		if (typ === 'MANAGEMENT') {
+		const isManager = typ === 'MANAGEMENT';
+		if (isManager) {
 			userInput = `manager${slot % 10}`;
 		}
 		const r = await createReservation(authorization, start, minutes, slot, userInput);
@@ -47,7 +48,14 @@
 			return;
 		}
 		dispatchReservation('addReservation', {
-			r: { id: data.success.id, slot: slot, start: start, duration: minutes, username: userInput }
+			r: {
+				id: data.success.id,
+				slot: slot,
+				start: start,
+				duration: minutes,
+				username: userInput,
+				isManager: isManager
+			}
 		});
 		open = false;
 	}
