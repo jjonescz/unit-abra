@@ -32,6 +32,5 @@ export async function put({ query, headers, body }) {
  * */
 export async function del({ query, headers }) {
     const response = await deleteReservation(headers.authorization, query.get('id'));
-    if (response)
-        return { body: {} };
+    return { body: response };
 }

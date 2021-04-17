@@ -4,6 +4,27 @@ import { getFreeSlot } from './parkSlotSelection.js';
 
 const endpoint = 'https://rezervace.flexibee.eu/v2/c/rezervace8';
 
+async function getSlotNumber(authorization, reservationId) {
+    const encodedId = encodeURIComponent(reservationId);
+    const query = new URLSearchParams({
+        detail: 'custom:zakazka'
+    });
+    const response = await fetch(`${endpoint}/udalost/${encodedId}.json?${query}`, {
+        headers: {
+            'Authorization': authorization
+        }
+    });
+    const data = await response.json();
+    const z = data.winstrom.udalost[0].zakazka;
+    return /code:(.*)/.exec(z)[1];
+}
+
+async function isSlotFull(slot) {
+    const response = await fetch('https://rezervace.s3.eu-central-1.amazonaws.com/parking8.json');
+    const data = await response.json();
+    return !!data[slot];
+}
+
 export async function getReservations(userName, authorization) {
     const userEncoded = encodeURIComponent(userName);
     const query = new URLSearchParams({
@@ -64,6 +85,10 @@ export async function createReservation(userName, authorization, start, duration
 }
 
 export async function deleteReservation(authorization, id) {
+    if (await isSlotFull(await getSlotNumber(authorization, id))) {
+        return { slotFull: true };
+    }
+
     const encodedId = encodeURIComponent(id);
     const response = await fetch(`${endpoint}/udalost/${encodedId}.json`, {
         method: 'DELETE',
@@ -71,5 +96,5 @@ export async function deleteReservation(authorization, id) {
             'Authorization': authorization
         }
     });
-    return response.ok;
+    return { success: response.ok };
 }
