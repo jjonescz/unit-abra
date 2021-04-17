@@ -3,7 +3,7 @@
 	import CalendarReservation from '$lib/ui/calendar/CalendarReservation.svelte';
 	import DeleteReservation from '$lib/ui/calendar/DeleteReservation.svelte';
 	import NewReservation from '$lib/ui/calendar/NewReservation.svelte';
-	import { Button } from 'carbon-components-svelte';
+	import { Button, InlineNotification } from 'carbon-components-svelte';
 	import { ChevronLeftGlyph, ChevronRightGlyph } from 'carbon-icons-svelte';
 	import {
 		format,
@@ -78,12 +78,18 @@
 	let delR = {};
 	let toDelete = {};
 	function deleteReservation(e) {
-		if (e.detail.delete) {
+		if (e.detail.delete.success) {
+			cannotDeleteFullSlot = false;
 			toDelete.$destroy();
 			delete reservations[delR.id];
+		} else if (e.detail.delete.slotFull) {
+			cannotDeleteFullSlot = true;
 		}
 		toDelete = {};
 	}
+
+	// Errors.
+	let cannotDeleteFullSlot = false;
 </script>
 
 <!-- Date selection. -->
@@ -112,6 +118,14 @@
 	<div>Click on reservation to delete it.</div>
 	<div>Management slots are automatically taken when grey.</div>
 </div>
+
+{#if cannotDeleteFullSlot}
+	<InlineNotification
+		lowContrast
+		title="Cannot delete:"
+		subtitle="Cannot manipulate with occupied parking slot."
+	/>
+{/if}
 
 <!-- Calendar. -->
 <table>

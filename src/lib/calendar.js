@@ -14,10 +14,11 @@ export async function getReservations(authorization, date) {
     }
 }
 
-export async function deleteReservation(authorization, id) {
+export async function deleteReservation(authorization, id, isManager) {
     // Delete reservation on server.
     const query = new URLSearchParams({
         id: id,
+        manager: isManager
     });
     const response = await fetch(`${endpoint}${query}`, {
         method: 'DELETE',
@@ -25,10 +26,7 @@ export async function deleteReservation(authorization, id) {
             authorization: authorization
         }
     });
-    if (response.ok) {
-        return true;
-    }
-    else { return false; }
+    return response;
 }
 
 export async function createReservation(authorization, date, duration, slot, user) {

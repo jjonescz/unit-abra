@@ -46,7 +46,7 @@
 	let dateInput;
 	let timeInput;
 	let durationInput = '1:00';
-	let userInput;
+	let userInput = 'navsteva';
 
 	// Parsing
 	$: date = parse(dateInput, 'yyyy-MM-dd', now);
@@ -98,7 +98,7 @@
 			invalidText={`Only ${parkingsMin} to ${parkingsMin + parkingsTotal}.`}
 		/>
 		{#if typ === 'ZAMESTNANEC'}
-			<Select labelText="User" bind:value={userInput}>
+			<Select labelText="User" bind:selected={userInput}>
 				{#each [...Array(32)] as _, i}
 					<SelectItem value={`uzivatel${i + 1}`} text={`uzivatel${i + 1}`} />
 				{/each}

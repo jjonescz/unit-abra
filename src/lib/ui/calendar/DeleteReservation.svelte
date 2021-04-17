@@ -12,10 +12,11 @@
 
 	const dispatchReservation = createEventDispatcher();
 	async function removeReservation() {
-		let deleted = await deleteReservation(authorization, r.id);
-		if (deleted) {
+		let response = await deleteReservation(authorization, r.id, r.isManager);
+		console.log(response);
+		if (response.ok) {
 			dispatchReservation('deleteReservation', {
-				delete: deleted
+				delete: await response.json()
 			});
 		} else {
 			alert('Could not delete the reservation, try again.');

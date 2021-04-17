@@ -1,4 +1,5 @@
-import { createReservation, deleteReservation, getReservations } from '$lib/server/receptionist';
+import { createReservation, getReservations } from '$lib/server/receptionist';
+import { deleteReservation } from '$lib/server/employee';
 
 /** Gets reservations on given day.
  *
@@ -31,7 +32,8 @@ export async function put({ query, headers, body }) {
  * @type {import('@sveltejs/kit').RequestHandler}
  * */
 export async function del({ query, headers }) {
-    const response = await deleteReservation(headers.authorization, query.get('id'));
+    const response = await deleteReservation(headers.authorization,
+        query.get('id'), query.get('manager') === 'true');
     if (response)
-        return { body: {} };
+        return { body: response };
 }
