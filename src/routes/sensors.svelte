@@ -3,6 +3,14 @@
 
 	export const hydrate = false;
 
+	/** @type {import('@sveltejs/kit').Load} */
+	export async function load({ session }) {
+		// Only allow admins access to this page.
+		if (session.user && session.user.role === 'ADMIN') {
+			return {};
+		}
+	}
+
 	startChecking();
 </script>
 

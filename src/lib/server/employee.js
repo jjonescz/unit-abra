@@ -1,5 +1,6 @@
 import { add, differenceInMinutes, formatISO } from 'date-fns';
 import fetch from 'node-fetch';
+import { getFreeSlot } from './parkSlotSelection.js';
 
 const endpoint = 'https://rezervace.flexibee.eu/v2/c/rezervace8';
 
@@ -29,6 +30,10 @@ export async function getReservations(userName, authorization) {
 }
 
 export async function createReservation(userName, authorization, start, duration) {
+    var freeSlot = await getFreeSlot(start, duration);
+    // There is no free slot available
+    if (freeSlot === -1)
+        return null;
     const response = await fetch(`${endpoint}/udalost.json`, {
         method: 'PUT',
         headers: {
@@ -42,7 +47,7 @@ export async function createReservation(userName, authorization, start, duration
                     zodpPrac: `code:${userName}`,
                     zahajeni: formatISO(start),
                     dokonceni: formatISO(add(start, { minutes: duration })),
-                    zakazka: 'code:101', // TODO: Select parking slot.
+                    zakazka: 'code:' + freeSlot,
                     volno: false
                 }
             }
@@ -52,7 +57,7 @@ export async function createReservation(userName, authorization, start, duration
     if (data.winstrom.success) {
         return {
             id: data.winstrom.results[0].id,
-            slot: 101 // TODO: Update when changing dynamically.
+            slot: freeSlot
         };
     }
     return null;

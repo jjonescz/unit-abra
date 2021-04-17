@@ -18,6 +18,8 @@
 
 	export let user;
 
+	const isManager = user.role === 'MANAGER';
+
 	const now = new Date();
 	const minDate = format(now, 'yyyy-MM-dd');
 
@@ -117,7 +119,13 @@
 	}
 </script>
 
-<h2>New reservation</h2>
+<h2>
+	{#if isManager}
+		Release parking slot
+	{:else}
+		New reservation
+	{/if}
+</h2>
 
 <div class="group">
 	{#if browser}
@@ -143,11 +151,23 @@
 	{/if}
 </div>
 <div class="group">
-	<Button type="submit" on:click={createReservation}>Reserve</Button>
+	<Button type="submit" on:click={createReservation}>
+		{#if isManager}
+			Release
+		{:else}
+			Reserve
+		{/if}
+	</Button>
 </div>
 
 <h2 style="margin-top: 2rem; margin-bottom: 1rem;">
-	<span style="margin-right: 0.5rem;">Your reservations</span>
+	<span style="margin-right: 0.5rem;">
+		{#if isManager}
+			Your releases
+		{:else}
+			Your reservations
+		{/if}
+	</span>
 	<Button
 		kind="tertiary"
 		iconDescription="Refresh"
@@ -185,7 +205,13 @@
 			</div>
 		</Tile>
 	{:else}
-		<em>No reservations yet.</em>
+		<em>
+			{#if isManager}
+				No upcoming releases.
+			{:else}
+				No upcoming reservations.
+			{/if}
+		</em>
 	{/each}
 {/if}
 

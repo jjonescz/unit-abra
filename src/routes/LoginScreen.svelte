@@ -2,19 +2,22 @@
 	import {
 		Button,
 		ButtonSet,
-		Tile,
+		Content,
 		FluidForm,
 		InlineNotification,
 		TextInput,
-		PasswordInput
+		PasswordInput,
+		InlineLoading
 	} from 'carbon-components-svelte';
 
 	let username, password;
 	let invalid_login = false;
+	let in_progress = false;
 
 	export let user;
 
 	async function login() {
+		in_progress = true;
 		const auth = `Basic ${btoa(`${username}:${password}`)}`;
 		const response = await fetch(`/login.json`, {
 			headers: {
@@ -40,25 +43,30 @@
 		} else {
 			invalid_login = true;
 		}
+		in_progress = false;
 	}
 </script>
 
-<div style="padding: 2rem;">
-	<Tile>
-		<FluidForm>
-			{#if invalid_login}
-				<InlineNotification
-					lowContrast
-					subtitle="Invalid login or password."
-					on:close={() => (invalid_login = false)}
-				/>
-			{/if}
+<Content>
+	<h1 style="margin-bottom: 1rem;">Log In</h1>
+
+	<FluidForm style="max-width: 720px;">
+		{#if invalid_login}
+			<InlineNotification
+				lowContrast
+				subtitle="Invalid login or password."
+				on:close={() => (invalid_login = false)}
+			/>
+		{/if}
+		<div style="margin-bottom: 1rem;">
 			<TextInput
 				bind:value={username}
 				required
 				labelText="User name"
 				placeholder="Enter user name..."
 			/>
+		</div>
+		<div style="margin-bottom: 1rem;">
 			<PasswordInput
 				bind:value={password}
 				required
@@ -66,10 +74,15 @@
 				labelText="Password"
 				placeholder="Enter password..."
 			/>
-		</FluidForm>
+		</div>
 
 		<ButtonSet>
-			<Button kind="primary" on:click={login}>Log In</Button>
+			<Button kind="primary" type="submit" on:click={login} style="margin-right: 0.5rem;"
+				>Log In</Button
+			>
+			{#if in_progress}
+				<InlineLoading description="Logging in..." />
+			{/if}
 		</ButtonSet>
-	</Tile>
-</div>
+	</FluidForm>
+</Content>
