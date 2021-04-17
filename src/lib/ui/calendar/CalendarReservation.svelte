@@ -1,6 +1,5 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
-	import { parkingsMin } from '$lib/db.js';
 	import {
 		getHours,
 		addMinutes,
@@ -41,7 +40,7 @@
 
 <button
 	style="width: calc({(width * 100) / 60}% + {spreadBorders}px); background-color: {slotColors[
-		(r.slot - parkingsMin) % slotColors.length
+		r.slot % 2
 	]}; left: {left}%;"
 	on:click={clickReservation}
 />

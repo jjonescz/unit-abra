@@ -1,6 +1,5 @@
 <script>
 	import { getReservations } from '$lib/calendar';
-	import { parkingsMin, parkingsTotal } from '$lib/db.js';
 	import CalendarReservation from '$lib/ui/calendar/CalendarReservation.svelte';
 	import DeleteReservation from '$lib/ui/calendar/DeleteReservation.svelte';
 	import NewReservation from '$lib/ui/calendar/NewReservation.svelte';
@@ -17,11 +16,14 @@
 		isBefore
 	} from 'date-fns';
 	import { browser } from '$app/env';
+	import { session } from '$app/stores';
 
 	let date = new Date();
 	export let user;
 
 	let reservations = {};
+	let slots = $session.slots;
+	$: console.log('Slots!!!', slots);
 
 	// Display reservations.
 	async function dayReservations(date) {
@@ -109,6 +111,7 @@
 <div style="margin-bottom: 1rem; margin-left: 1rem;">
 	<div>Click inside the calendar to create new reservation.</div>
 	<div>Click on reservation to delete it.</div>
+	<div>Management slots are automatically taken when grey.</div>
 </div>
 
 <!-- Calendar. -->
@@ -119,15 +122,22 @@
 			<th scope="col">{hour}</th>
 		{/each}
 	</tr>
-	{#each [...Array(parkingsTotal)] as _, slot}
+	{#each slots as s}
 		<tr>
-			<th scope="row">{parkingsMin + slot}</th>
+			<th scope="row">{s.kod}</th>
 			{#each [...Array(24)] as _, hour}
 				<!-- Mark table cells for positioning of reservations. -->
-				<td
-					data-id="{parkingsMin + slot}-{hour}"
-					on:click={() => createReservation(parkingsMin + slot, hour)}
-				/>
+				{#if s.typ === 'MANAGEMENT'}
+					<td
+						style="background-color: var(--cds-ui-03);"
+						data-id="{s.kod}-{hour}"
+					/>
+				{:else}
+					<td
+						data-id="{s.kod}-{hour}"
+						on:click={() => createReservation(s.kod, hour)}
+					/>
+				{/if}
 			{/each}
 		</tr>
 	{/each}
@@ -135,6 +145,7 @@
 <NewReservation
 	on:addReservation={addReservation}
 	bind:open={newOpen}
+	{slots}
 	slot={newslot}
 	startInput={setMinutes(setHours(date, newStart), 0)}
 	authorization={user.authorization}

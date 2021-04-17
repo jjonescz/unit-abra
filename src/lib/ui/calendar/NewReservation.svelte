@@ -1,7 +1,6 @@
 <script>
 	import { browser } from '$app/env';
 	import { createReservation } from '$lib/calendar';
-	import { parkingsMin, parkingsTotal } from '$lib/db.js';
 	import {
 		DatePicker,
 		DatePickerInput,
@@ -15,6 +14,10 @@
 	} from 'carbon-components-svelte';
 	import { differenceInMinutes, format, parse, startOfDay } from 'date-fns';
 	import { createEventDispatcher } from 'svelte';
+
+	export let slots = [];
+	$: parkingsMin = parseInt(slots[0].kod) || 0;
+	$: parkingsTotal = slots.length;
 
 	export let open; // Toggles modal visibility.
 	export let slot; // Selected parking slot.
