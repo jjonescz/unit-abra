@@ -3,4 +3,8 @@
 	import '../app.scss';
 </script>
 
+<svelte:head>
+	<title>ABRA Parking</title>
+</svelte:head>
+
 <slot />
