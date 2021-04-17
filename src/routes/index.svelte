@@ -13,7 +13,7 @@
 		HeaderPanelDivider
 	} from 'carbon-components-svelte';
 	import LoginScreen from './LoginScreen.svelte';
-	import ParkingLogic from './ParkingLogic.svelte';
+	import ParkSlotTesting from './ParkSlotTesting.svelte';
 
 	let user = $session.user;
 
@@ -53,4 +53,4 @@
 	</Content>
 {/if}
 
-<ParkingLogic />
+<ParkSlotTesting />
